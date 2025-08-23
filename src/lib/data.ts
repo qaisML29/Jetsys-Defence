@@ -48,7 +48,8 @@ function readDb(): Db {
 function writeDb(data: Db) {
   try {
     fs.writeFileSync(dataFilePath, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (error) {
+  } catch (error)
+  {
     console.error("Error writing to db.json.", error);
   }
 }

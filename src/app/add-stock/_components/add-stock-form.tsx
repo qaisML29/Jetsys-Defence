@@ -47,6 +47,8 @@ export function AddStockForm({ categories }: AddStockFormProps) {
         description: state.message,
         variant: 'destructive',
       });
+    } else if (state.type === 'success') {
+      router.push('/manage-stock');
     }
   }, [state, toast, router]);
 
