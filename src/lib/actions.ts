@@ -87,7 +87,7 @@ export async function createStockItem(prevState: any, formData: FormData) {
   } catch (error) {
     return { type: 'error', message: 'Failed to create stock item.' };
   }
-  
+
   redirect('/manage-stock');
 }
 
