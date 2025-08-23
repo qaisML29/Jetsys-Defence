@@ -14,12 +14,12 @@ import { useRouter } from 'next/navigation';
 const initialState = {
   type: null,
   message: '',
+  errors: null,
 };
 
 export function AddStockForm() {
   const [state, formAction] = useActionState(createStockItem, initialState);
   const { toast } = useToast();
-  const router = useRouter();
 
   useEffect(() => {
     if (state.type === 'error') {
@@ -29,14 +29,8 @@ export function AddStockForm() {
         variant: 'destructive',
       });
     }
-    if (state.type === 'success') {
-      toast({
-        title: 'Success!',
-        description: 'Item added to inventory.',
-      });
-      router.push('/manage-stock');
-    }
-  }, [state, toast, router]);
+    // Success case is now handled by server-side redirect
+  }, [state, toast]);
 
   return (
     <form action={formAction} className="space-y-6">
