@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState, useEffect } from 'react';
+import { useActionState, useState, useEffect, useOptimistic } from 'react';
 import { useFormStatus } from 'react-dom';
 import type { AppSettings } from '@/types';
 import { saveSettings } from '@/lib/actions';
@@ -66,6 +66,7 @@ export function SettingsForm({ currentSettings }: SettingsFormProps) {
             <div key={index} className="flex items-center gap-2">
               <Input value={num} readOnly className="bg-muted" />
               <Button
+                type="button"
                 variant="ghost"
                 size="icon"
                 className="text-destructive hover:text-destructive"
