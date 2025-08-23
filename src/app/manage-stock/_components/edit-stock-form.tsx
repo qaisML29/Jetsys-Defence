@@ -14,7 +14,7 @@ import { Loader2 } from 'lucide-react';
 
 interface EditStockFormProps {
   item: StockItem;
-  onUpdateSuccess: (updatedItem: StockItem) => void;
+  onUpdateSuccess: () => void;
 }
 
 const stockSchema = z.object({
@@ -40,23 +40,7 @@ export function EditStockForm({ item, onUpdateSuccess }: EditStockFormProps) {
         title: 'Success!',
         description: state.message,
       });
-      const formData = new FormData();
-      // This is a bit of a hack to get the form data back to the parent without re-fetching
-      formData.append('name', (document.getElementById('name') as HTMLInputElement).value);
-      formData.append('category', (document.getElementById('category') as HTMLInputElement).value);
-      formData.append('location', (document.getElementById('location') as HTMLInputElement).value);
-      formData.append('quantity', (document.getElementById('quantity') as HTMLInputElement).value);
-      formData.append('minStockLimit', (document.getElementById('minStockLimit') as HTMLInputElement).value);
-
-      const updatedItem = {
-        ...item,
-        name: formData.get('name') as string,
-        category: formData.get('category') as string,
-        location: formData.get('location') as string,
-        quantity: Number(formData.get('quantity')),
-        minStockLimit: Number(formData.get('minStockLimit')),
-      };
-      onUpdateSuccess(updatedItem);
+      onUpdateSuccess();
 
     } else if (state.type === 'error') {
       toast({

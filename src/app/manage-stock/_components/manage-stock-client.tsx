@@ -27,18 +27,17 @@ interface ManageStockClientProps {
   stockItems: StockItem[];
 }
 
-export function ManageStockClient({ stockItems: initialStockItems }: ManageStockClientProps) {
-  const [stockItems, setStockItems] = useState(initialStockItems);
+export function ManageStockClient({ stockItems }: ManageStockClientProps) {
   const [editingItem, setEditingItem] = useState<StockItem | null>(null);
   const router = useRouter();
   
-  const onUpdateSuccess = (updatedItem: StockItem) => {
-    setStockItems(prevItems => prevItems.map(item => item.id === updatedItem.id ? updatedItem : item));
+  const onUpdateSuccess = () => {
     setEditingItem(null);
+    router.refresh();
   };
   
-  const onDeleteSuccess = (deletedItemId: string) => {
-    setStockItems(prevItems => prevItems.filter(item => item.id !== deletedItemId));
+  const onDeleteSuccess = () => {
+    router.refresh();
   };
 
   return (

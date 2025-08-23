@@ -20,7 +20,7 @@ import { Loader2 } from 'lucide-react';
 interface DeleteStockAlertProps {
   item: StockItem;
   children: React.ReactNode;
-  onDeleteSuccess: (deletedItemId: string) => void;
+  onDeleteSuccess: () => void;
 }
 
 export function DeleteStockAlert({ item, children, onDeleteSuccess }: DeleteStockAlertProps) {
@@ -34,7 +34,7 @@ export function DeleteStockAlert({ item, children, onDeleteSuccess }: DeleteStoc
     setLoading(false);
     if (result.type === 'success') {
       toast({ title: 'Success', description: result.message });
-      onDeleteSuccess(item.id);
+      onDeleteSuccess();
       setOpen(false);
     } else {
       toast({ title: 'Error', description: result.message, variant: 'destructive' });
