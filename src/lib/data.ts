@@ -17,7 +17,7 @@ let usageLogs: UsageLog[] = [
 ];
 
 let settings: AppSettings = {
-  phoneNumbers: ['+15551234567', '+15557654321'],
+  phoneNumbers: ['9872241604'],
 };
 
 // --- API simulation functions ---
