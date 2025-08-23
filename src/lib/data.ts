@@ -3,11 +3,11 @@ import type { StockItem, UsageLog, AppSettings } from '@/types';
 // --- In-memory database simulation ---
 
 let stockItems: StockItem[] = [
-  { id: '1', name: 'Screws', category: 'Fasteners', quantity: 5000, minStockLimit: 1000, lastUpdated: new Date().toISOString() },
-  { id: '2', name: 'Nuts', category: 'Fasteners', quantity: 8000, minStockLimit: 2000, lastUpdated: new Date().toISOString() },
-  { id: '3', name: 'Bolts', category: 'Fasteners', quantity: 300, minStockLimit: 500, lastUpdated: new Date().toISOString() },
-  { id: '4', name: 'Rivets', category: 'Fasteners', quantity: 10000, minStockLimit: 2500, lastUpdated: new Date().toISOString() },
-  { id: '5', name: 'Aluminum Plate', category: 'Materials', quantity: 150, minStockLimit: 50, lastUpdated: new Date().toISOString() },
+  { id: '1', name: 'Screws', category: 'Fasteners', quantity: 5000, minStockLimit: 1000, location: 'Aisle 1, Bin A', lastUpdated: new Date().toISOString() },
+  { id: '2', name: 'Nuts', category: 'Fasteners', quantity: 8000, minStockLimit: 2000, location: 'Aisle 1, Bin B', lastUpdated: new Date().toISOString() },
+  { id: '3', name: 'Bolts', category: 'Fasteners', quantity: 300, minStockLimit: 500, location: 'Aisle 1, Bin C', lastUpdated: new Date().toISOString() },
+  { id: '4', name: 'Rivets', category: 'Fasteners', quantity: 10000, minStockLimit: 2500, location: 'Aisle 2, Bin A', lastUpdated: new Date().toISOString() },
+  { id: '5', name: 'Aluminum Plate', category: 'Materials', quantity: 150, minStockLimit: 50, location: 'Yard 1', lastUpdated: new Date().toISOString() },
 ];
 
 let usageLogs: UsageLog[] = [

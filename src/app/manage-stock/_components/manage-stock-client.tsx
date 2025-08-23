@@ -46,6 +46,7 @@ export function ManageStockClient({ stockItems: initialStockItems }: ManageStock
           <TableRow>
             <TableHead>Item Name</TableHead>
             <TableHead>Category</TableHead>
+            <TableHead>Location</TableHead>
             <TableHead className="text-right">Quantity</TableHead>
             <TableHead className="text-right">Min. Stock</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -56,6 +57,7 @@ export function ManageStockClient({ stockItems: initialStockItems }: ManageStock
             <TableRow key={item.id}>
               <TableCell className="font-medium">{item.name}</TableCell>
               <TableCell>{item.category}</TableCell>
+              <TableCell>{item.location}</TableCell>
               <TableCell className="text-right">{item.quantity}</TableCell>
               <TableCell className="text-right">{item.minStockLimit}</TableCell>
               <TableCell className="text-right space-x-2">

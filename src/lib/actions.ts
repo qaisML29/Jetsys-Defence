@@ -17,6 +17,7 @@ import twilio from 'twilio';
 const stockSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   category: z.string().min(1, 'Category is required'),
+  location: z.string().min(1, 'Location is required'),
   quantity: z.coerce.number().int().min(0, 'Quantity cannot be negative'),
   minStockLimit: z.coerce
     .number()
@@ -58,6 +59,7 @@ export async function createStockItem(prevState: any, formData: FormData) {
   const validatedFields = stockSchema.safeParse({
     name: formData.get('name'),
     category: formData.get('category'),
+    location: formData.get('location'),
     quantity: formData.get('quantity'),
     minStockLimit: formData.get('minStockLimit'),
   });
@@ -97,6 +99,7 @@ export async function editStockItem(
   const validatedFields = stockSchema.safeParse({
     name: formData.get('name'),
     category: formData.get('category'),
+    location: formData.get('location'),
     quantity: formData.get('quantity'),
     minStockLimit: formData.get('minStockLimit'),
   });
@@ -211,7 +214,7 @@ export async function saveSettings(prevState: any, formData: FormData) {
   } catch (error) {
     return { type: 'error', message: 'Invalid phone numbers format.' };
   }
-
+  
   const settingsData = {
     phoneNumbers: phoneNumbers,
   };

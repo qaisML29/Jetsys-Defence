@@ -20,6 +20,7 @@ interface EditStockFormProps {
 const stockSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   category: z.string().min(1, 'Category is required'),
+  location: z.string().min(1, 'Location is required'),
   quantity: z.coerce.number().min(0, 'Quantity cannot be negative'),
   minStockLimit: z.coerce.number().min(0, 'Minimum stock cannot be negative'),
 });
@@ -43,6 +44,7 @@ export function EditStockForm({ item, onUpdateSuccess }: EditStockFormProps) {
       // This is a bit of a hack to get the form data back to the parent without re-fetching
       formData.append('name', (document.getElementById('name') as HTMLInputElement).value);
       formData.append('category', (document.getElementById('category') as HTMLInputElement).value);
+      formData.append('location', (document.getElementById('location') as HTMLInputElement).value);
       formData.append('quantity', (document.getElementById('quantity') as HTMLInputElement).value);
       formData.append('minStockLimit', (document.getElementById('minStockLimit') as HTMLInputElement).value);
 
@@ -50,6 +52,7 @@ export function EditStockForm({ item, onUpdateSuccess }: EditStockFormProps) {
         ...item,
         name: formData.get('name') as string,
         category: formData.get('category') as string,
+        location: formData.get('location') as string,
         quantity: Number(formData.get('quantity')),
         minStockLimit: Number(formData.get('minStockLimit')),
       };
@@ -66,15 +69,22 @@ export function EditStockForm({ item, onUpdateSuccess }: EditStockFormProps) {
 
   return (
     <form action={formAction} className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="name">Item Name</Label>
-        <Input id="name" name="name" defaultValue={item.name} required />
-        {state.errors?.name && <p className="text-sm text-destructive">{state.errors.name[0]}</p>}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <Label htmlFor="name">Item Name</Label>
+          <Input id="name" name="name" defaultValue={item.name} required />
+          {state.errors?.name && <p className="text-sm text-destructive">{state.errors.name[0]}</p>}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="category">Category</Label>
+          <Input id="category" name="category" defaultValue={item.category} required />
+          {state.errors?.category && <p className="text-sm text-destructive">{state.errors.category[0]}</p>}
+        </div>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="category">Category</Label>
-        <Input id="category" name="category" defaultValue={item.category} required />
-        {state.errors?.category && <p className="text-sm text-destructive">{state.errors.category[0]}</p>}
+        <Label htmlFor="location">Location</Label>
+        <Input id="location" name="location" defaultValue={item.location} required />
+        {state.errors?.location && <p className="text-sm text-destructive">{state.errors.location[0]}</p>}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
