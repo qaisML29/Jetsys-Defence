@@ -25,9 +25,10 @@ import { useRouter } from 'next/navigation';
 
 interface ManageStockClientProps {
   stockItems: StockItem[];
+  categories: string[];
 }
 
-export function ManageStockClient({ stockItems }: ManageStockClientProps) {
+export function ManageStockClient({ stockItems, categories }: ManageStockClientProps) {
   const [editingItem, setEditingItem] = useState<StockItem | null>(null);
   const router = useRouter();
   
@@ -75,7 +76,7 @@ export function ManageStockClient({ stockItems }: ManageStockClientProps) {
                     <DialogHeader>
                       <DialogTitle>Edit {item.name}</DialogTitle>
                     </DialogHeader>
-                    <EditStockForm item={item} onUpdateSuccess={onUpdateSuccess} />
+                    <EditStockForm item={item} categories={categories} onUpdateSuccess={onUpdateSuccess} />
                   </DialogContent>
                 </Dialog>
                 

@@ -1,8 +1,10 @@
 import { PageHeader } from '@/components/page-header';
 import { AddStockForm } from './_components/add-stock-form';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { getUniqueCategories } from '@/lib/data';
 
-export default function AddStockPage() {
+export default async function AddStockPage() {
+  const categories = await getUniqueCategories();
   
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
@@ -18,7 +20,7 @@ export default function AddStockPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <AddStockForm />
+          <AddStockForm categories={categories} />
         </CardContent>
       </Card>
     </div>

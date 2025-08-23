@@ -20,7 +20,7 @@ const stockSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   location: z.string().min(1, 'Location is required'),
   quantity: z.coerce.number().int().min(0, 'Quantity cannot be negative'),
-  quantityKg: z.coerce.number().min(0, 'Quantity KG cannot be negative').optional(),
+  quantityKg: z.coerce.number().min(0, 'Quantity KG cannot be negative').optional().nullable(),
   minStockLimit: z.coerce
     .number()
     .int()
@@ -86,6 +86,7 @@ export async function createStockItem(prevState: any, formData: FormData) {
 
     revalidatePath('/');
     revalidatePath('/manage-stock');
+    revalidatePath('/add-stock');
     
   } catch (error) {
     return { type: 'error', message: 'Failed to create stock item.' };
@@ -134,6 +135,7 @@ export async function editStockItem(
 
     revalidatePath('/');
     revalidatePath('/manage-stock');
+    revalidatePath('/add-stock');
     return {
       type: 'success',
       message: `Updated ${validatedFields.data.name}.`,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { useEffect } from 'react';
 import { createStockItem } from '@/lib/actions';
@@ -8,8 +8,23 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ChevronsUpDown, Check } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import { cn } from '@/lib/utils';
+
+interface AddStockFormProps {
+  categories: string[];
+}
+
 
 const initialState = {
   type: null,
@@ -17,10 +32,13 @@ const initialState = {
   errors: null,
 };
 
-export function AddStockForm() {
+export function AddStockForm({ categories }: AddStockFormProps) {
   const [state, formAction] = useActionState(createStockItem, initialState);
   const { toast } = useToast();
   const router = useRouter();
+
+  const [open, setOpen] = useState(false)
+  const [value, setValue] = useState("")
 
   useEffect(() => {
     if (state.type === 'error') {
@@ -29,11 +47,6 @@ export function AddStockForm() {
         description: state.message,
         variant: 'destructive',
       });
-    }
-    if (state.type === 'success') {
-      // This is now handled by server-side redirect in the action
-      // but as a fallback, we could navigate here.
-      // router.push('/manage-stock');
     }
   }, [state, toast, router]);
 
@@ -46,8 +59,56 @@ export function AddStockForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="category">Category</Label>
-        <Input id="category" name="category" placeholder="e.g., Fasteners" required />
+        <Label>Category</Label>
+        <Input type="hidden" name="category" value={value} />
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="w-full justify-between"
+            >
+              {value
+                ? categories.find((category) => category.toLowerCase() === value.toLowerCase()) || value
+                : "Select or create a category..."}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+            <Command>
+              <CommandInput 
+                placeholder="Search category..."
+                onInput={(e) => setValue(e.currentTarget.value)}
+              />
+              <CommandList>
+                <CommandEmpty>
+                  { value ? `Create "${value}"` : 'No category found.' }
+                </CommandEmpty>
+                <CommandGroup>
+                  {categories.map((category) => (
+                    <CommandItem
+                      key={category}
+                      value={category}
+                      onSelect={(currentValue) => {
+                        setValue(currentValue === value ? "" : currentValue)
+                        setOpen(false)
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          value.toLowerCase() === category.toLowerCase() ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {category}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
         {state.errors?.category && <p className="text-sm text-destructive">{state.errors.category[0]}</p>}
       </div>
 

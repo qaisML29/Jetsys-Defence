@@ -61,6 +61,12 @@ export const getStockItems = async (): Promise<StockItem[]> => {
   return [...db.stockItems].sort((a, b) => a.name.localeCompare(b.name));
 };
 
+export const getUniqueCategories = async (): Promise<string[]> => {
+  const db = readDb();
+  const categories = new Set(db.stockItems.map(item => item.category));
+  return Array.from(categories).sort();
+}
+
 export const getStockItem = async (id: string): Promise<StockItem | undefined> => {
   const db = readDb();
   return db.stockItems.find(item => item.id === id);

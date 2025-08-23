@@ -53,6 +53,16 @@
       "minStockLimit": 500,
       "id": "1755953680330",
       "lastUpdated": "2025-08-23T12:57:04.710Z"
+    },
+    {
+      "name": "aluminium sheet",
+      "category": "Materials",
+      "location": "Yard 1",
+      "quantity": 5000,
+      "quantityKg": 400,
+      "minStockLimit": 200,
+      "id": "1755955855365",
+      "lastUpdated": "2025-08-23T13:31:13.922Z"
     }
   ],
   "usageLogs": [
@@ -95,6 +105,14 @@
       "itemName": "bar",
       "usageDate": "2025-08-23T12:57:04.510Z",
       "id": "1755953824710"
+    },
+    {
+      "employeeName": "Ram charan",
+      "itemId": "1755955855365",
+      "quantityUsed": 500,
+      "itemName": "aluminium sheet",
+      "usageDate": "2025-08-23T13:31:13.921Z",
+      "id": "1755955873922"
     }
   ],
   "settings": {

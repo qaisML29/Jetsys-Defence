@@ -1,14 +1,6 @@
 import Link from 'next/link';
 import { PageHeader } from '@/components/page-header';
-import { getStockItems } from '@/lib/data';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { getStockItems, getUniqueCategories } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -19,6 +11,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function ManageStockPage() {
   const stockItems = await getStockItems();
+  const categories = await getUniqueCategories();
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
@@ -40,7 +33,7 @@ export default async function ManageStockPage() {
             </Button>
         </CardHeader>
         <CardContent>
-           <ManageStockClient stockItems={stockItems} />
+           <ManageStockClient stockItems={stockItems} categories={categories} />
         </CardContent>
       </Card>
     </div>
