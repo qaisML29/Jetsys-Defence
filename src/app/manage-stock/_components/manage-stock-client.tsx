@@ -21,6 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { useRouter } from 'next/navigation';
 
 interface ManageStockClientProps {
   stockItems: StockItem[];
@@ -29,7 +30,7 @@ interface ManageStockClientProps {
 export function ManageStockClient({ stockItems: initialStockItems }: ManageStockClientProps) {
   const [stockItems, setStockItems] = useState(initialStockItems);
   const [editingItem, setEditingItem] = useState<StockItem | null>(null);
-
+  const router = useRouter();
   
   const onUpdateSuccess = (updatedItem: StockItem) => {
     setStockItems(prevItems => prevItems.map(item => item.id === updatedItem.id ? updatedItem : item));

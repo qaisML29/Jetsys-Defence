@@ -30,7 +30,7 @@ export default async function ManageStockPage() {
         <CardHeader className="flex flex-row items-center justify-between">
             <div className="space-y-1.5">
                 <CardTitle>Inventory List</CardTitle>
-                <CardDescription>Click on an item to edit or delete.</CardDescription>
+                <CardDescription>The current state of your inventory.</CardDescription>
             </div>
             <Button asChild>
                 <Link href="/add-stock">
