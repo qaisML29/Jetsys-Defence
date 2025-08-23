@@ -12,6 +12,7 @@ import {
   getSettings,
 } from './data';
 import type { AppSettings, StockItem } from '@/types';
+import twilio from 'twilio';
 
 const stockSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -26,15 +27,28 @@ const stockSchema = z.object({
 // Helper function to send notifications
 async function sendLowStockAlert(item: StockItem) {
   const settings = await getSettings();
+  if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_WHATSAPP_NUMBER) {
+    console.log("Twilio credentials are not set in environment variables. Skipping WhatsApp alert.");
+    return;
+  }
+
   if (settings.phoneNumbers && settings.phoneNumbers.length > 0) {
     const message = `JETSYS™ Alert: Stock for "${item.name}" is low. Current quantity: ${item.quantity}. Minimum limit: ${item.minStockLimit}.`;
+    
+    const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
     console.log(`--- Low Stock Alert Triggered for ${item.name} ---`);
     for (const phoneNumber of settings.phoneNumbers) {
-      // TODO: Integrate with a service like Twilio to send a WhatsApp message
-      console.log(
-        `Simulating sending WhatsApp message to ${phoneNumber}: "${message}"`
-      );
+      try {
+        await client.messages.create({
+          body: message,
+          from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`, // Your Twilio WhatsApp number
+          to: `whatsapp:${phoneNumber}`
+        });
+        console.log(`Successfully sent WhatsApp message to ${phoneNumber}`);
+      } catch (error) {
+        console.error(`Failed to send WhatsApp message to ${phoneNumber}:`, error);
+      }
     }
     console.log(`--- End of Alert ---`);
   }
@@ -199,7 +213,7 @@ export async function saveSettings(prevState: any, formData: FormData) {
   }
 
   const settingsData = {
-    phoneNumbers: phoneNumbers.filter((ph) => ph && ph.trim().length > 0),
+    phoneNumbers: phoneNumbers,
   };
 
   const validatedFields = settingsSchema.safeParse(settingsData);
