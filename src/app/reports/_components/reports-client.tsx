@@ -50,7 +50,7 @@ export function ReportsClient({ usageLogs, stockItems }: { usageLogs: UsageLog[]
   const chartConfig = {
     quantity: {
       label: 'Quantity Used',
-      color: 'hsl(var(--primary))',
+      color: 'hsl(var(--accent))',
     },
   } satisfies ChartConfig;
 
