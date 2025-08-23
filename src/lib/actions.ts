@@ -158,6 +158,7 @@ export async function createStockItem(prevState: any, formData: FormData) {
 
     revalidatePath('/');
     revalidatePath('/manage-stock');
+    revalidatePath('/add-stock');
   } catch (error) {
     return { type: 'error', message: 'Failed to create stock item.' };
   }
