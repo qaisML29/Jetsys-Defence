@@ -28,11 +28,12 @@ interface ManageStockClientProps {
 
 export function ManageStockClient({ stockItems: initialStockItems }: ManageStockClientProps) {
   const [stockItems, setStockItems] = useState(initialStockItems);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<StockItem | null>(null);
+
   
   const onUpdateSuccess = (updatedItem: StockItem) => {
     setStockItems(prevItems => prevItems.map(item => item.id === updatedItem.id ? updatedItem : item));
-    setIsEditDialogOpen(false);
+    setEditingItem(null);
   };
   
   const onDeleteSuccess = (deletedItemId: string) => {
@@ -61,9 +62,9 @@ export function ManageStockClient({ stockItems: initialStockItems }: ManageStock
               <TableCell className="text-right">{item.quantity}</TableCell>
               <TableCell className="text-right">{item.minStockLimit}</TableCell>
               <TableCell className="text-right space-x-2">
-                <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                <Dialog open={editingItem?.id === item.id} onOpenChange={(isOpen) => !isOpen && setEditingItem(null)}>
                   <DialogTrigger asChild>
-                    <Button variant="ghost" size="icon" onClick={() => setIsEditDialogOpen(true)}>
+                    <Button variant="ghost" size="icon" onClick={() => setEditingItem(item)}>
                       <Edit className="h-4 w-4" />
                       <span className="sr-only">Edit</span>
                     </Button>

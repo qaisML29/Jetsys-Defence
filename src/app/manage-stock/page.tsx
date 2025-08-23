@@ -1,10 +1,19 @@
 import Link from 'next/link';
 import { PageHeader } from '@/components/page-header';
 import { getStockItems } from '@/lib/data';
-import { ManageStockClient } from './_components/manage-stock-client';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { ManageStockClient } from './_components/manage-stock-client';
+
 
 export const dynamic = 'force-dynamic';
 
@@ -31,7 +40,7 @@ export default async function ManageStockPage() {
             </Button>
         </CardHeader>
         <CardContent>
-            <ManageStockClient stockItems={stockItems} />
+           <ManageStockClient stockItems={stockItems} />
         </CardContent>
       </Card>
     </div>
