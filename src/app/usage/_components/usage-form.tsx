@@ -75,9 +75,17 @@ export function UsageForm({ stockItems }: UsageFormProps) {
     }
   }, [state, toast, form]);
 
+  const onSubmit = (data: UsageFormData) => {
+    const formData = new FormData();
+    formData.append('employeeName', data.employeeName);
+    formData.append('itemId', data.itemId);
+    formData.append('quantityUsed', String(data.quantityUsed));
+    formAction(formData);
+  };
+
   return (
     <Form {...form}>
-      <form action={formAction} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="employeeName"
