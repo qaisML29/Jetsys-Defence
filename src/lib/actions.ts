@@ -11,7 +11,7 @@ import {
   updateSettings,
   getSettings,
 } from './data';
-import type { AppSettings } from '@/types';
+import type { AppSettings, StockItem } from '@/types';
 
 const stockSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -22,6 +22,23 @@ const stockSchema = z.object({
     .int()
     .min(0, 'Minimum stock cannot be negative'),
 });
+
+// Helper function to send notifications
+async function sendLowStockAlert(item: StockItem) {
+  const settings = await getSettings();
+  if (settings.phoneNumbers && settings.phoneNumbers.length > 0) {
+    const message = `JETSYS™ Alert: Stock for "${item.name}" is low. Current quantity: ${item.quantity}. Minimum limit: ${item.minStockLimit}.`;
+
+    console.log(`--- Low Stock Alert Triggered for ${item.name} ---`);
+    for (const phoneNumber of settings.phoneNumbers) {
+      // TODO: Integrate with a service like Twilio to send a WhatsApp message
+      console.log(
+        `Simulating sending WhatsApp message to ${phoneNumber}: "${message}"`
+      );
+    }
+    console.log(`--- End of Alert ---`);
+  }
+}
 
 export async function createStockItem(prevState: any, formData: FormData) {
   const validatedFields = stockSchema.safeParse({
@@ -40,7 +57,13 @@ export async function createStockItem(prevState: any, formData: FormData) {
   }
 
   try {
-    await addStockItem(validatedFields.data);
+    const newItem = await addStockItem(validatedFields.data);
+
+    // Check if the new item is already low on stock
+    if (newItem.quantity < newItem.minStockLimit) {
+      await sendLowStockAlert(newItem);
+    }
+
     revalidatePath('/');
     revalidatePath('/manage-stock');
     return {
@@ -73,14 +96,17 @@ export async function editStockItem(
   }
 
   try {
+    const originalItem = await getStockItem(id);
+    const wasLow = originalItem ? originalItem.quantity < originalItem.minStockLimit : false;
+
     const updatedItem = await updateStockItem(id, validatedFields.data);
 
-    if (
-      updatedItem &&
-      updatedItem.quantity < updatedItem.minStockLimit
-    ) {
-      // Potentially trigger alert here too if needed
-      console.log(`Item ${updatedItem.name} is low on stock after manual edit.`);
+    if (updatedItem) {
+      const isLow = updatedItem.quantity < updatedItem.minStockLimit;
+      // Trigger alert if it just became low
+      if (isLow && !wasLow) {
+        await sendLowStockAlert(updatedItem);
+      }
     }
 
     revalidatePath('/');
@@ -132,20 +158,14 @@ export async function logUsageAction(prevState: any, formData: FormData) {
       itemName: '', // Will be set in addUsageLog
       usageDate: new Date().toISOString(),
     });
-    
+
     // Check if the item just became low on stock
-    if (updatedItem && updatedItem.quantity < updatedItem.minStockLimit && !wasLow) {
-        const settings = await getSettings();
-        if (settings.phoneNumbers && settings.phoneNumbers.length > 0) {
-            const message = `JETSYS™ Alert: Stock for "${updatedItem.name}" is low. Current quantity: ${updatedItem.quantity}. Minimum limit: ${updatedItem.minStockLimit}.`;
-            
-            console.log(`--- Low Stock Alert Triggered for ${updatedItem.name} ---`);
-            for (const phoneNumber of settings.phoneNumbers) {
-                // TODO: Integrate with a service like Twilio to send a WhatsApp message
-                console.log(`Simulating sending WhatsApp message to ${phoneNumber}: "${message}"`);
-            }
-            console.log(`--- End of Alert ---`);
-        }
+    if (
+      updatedItem &&
+      updatedItem.quantity < updatedItem.minStockLimit &&
+      !wasLow
+    ) {
+      await sendLowStockAlert(updatedItem);
     }
 
     revalidatePath('/');
