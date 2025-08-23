@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,7 +28,7 @@ const initialState = {
 };
 
 export function AddStockForm() {
-  const [state, formAction] = useFormState(createStockItem, initialState);
+  const [state, formAction] = useActionState(createStockItem, initialState);
   const { toast } = useToast();
   const { reset } = useForm<StockFormData>();
 

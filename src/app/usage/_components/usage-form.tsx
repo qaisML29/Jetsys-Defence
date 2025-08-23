@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
 import { z } from 'zod';
@@ -46,7 +47,7 @@ const initialState = {
 };
 
 export function UsageForm({ stockItems }: UsageFormProps) {
-  const [state, formAction] = useFormState(logUsageAction, initialState);
+  const [state, formAction] = useActionState(logUsageAction, initialState);
   const { toast } = useToast();
 
   const form = useForm<UsageFormData>({

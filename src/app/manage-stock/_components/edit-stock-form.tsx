@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { useEffect } from 'react';
 import { z } from 'zod';
 import { editStockItem } from '@/lib/actions';
@@ -29,7 +30,7 @@ const initialState = {
 };
 
 export function EditStockForm({ item, onUpdateSuccess }: EditStockFormProps) {
-  const [state, formAction] = useFormState(editStockItem.bind(null, item.id), initialState);
+  const [state, formAction] = useActionState(editStockItem.bind(null, item.id), initialState);
   const { toast } = useToast();
 
   useEffect(() => {
