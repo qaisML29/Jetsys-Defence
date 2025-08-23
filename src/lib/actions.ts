@@ -56,6 +56,81 @@ async function sendLowStockAlert(item: StockItem) {
   }
 }
 
+export async function createOrUpdateStockItem(prevState: any, formData: FormData) {
+  const isUpdateMode = formData.get('isUpdateMode') === 'true';
+  const id = formData.get('id') as string | undefined;
+
+  if (isUpdateMode && id) {
+    // Logic for updating (restocking)
+    const validatedFields = z.object({
+        quantity: z.coerce.number().int().min(1, 'Quantity to add must be at least 1'),
+    }).safeParse({
+        quantity: formData.get('quantity'),
+    });
+
+    if (!validatedFields.success) {
+        return {
+            type: 'error',
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: 'Invalid quantity.',
+        };
+    }
+    
+    try {
+        const existingItem = await getStockItem(id);
+        if (!existingItem) {
+            return { type: 'error', message: 'Item to update not found.' };
+        }
+        
+        const newQuantity = existingItem.quantity + validatedFields.data.quantity;
+        
+        await updateStockItem(id, { ...existingItem, quantity: newQuantity });
+        
+        revalidatePath('/');
+        revalidatePath('/manage-stock');
+        revalidatePath('/add-stock');
+        
+    } catch (error) {
+        return { type: 'error', message: 'Failed to restock item.' };
+    }
+
+
+  } else {
+    // Logic for creating a new item
+    const validatedFields = stockSchema.safeParse({
+      name: formData.get('name'),
+      category: formData.get('category'),
+      location: formData.get('location'),
+      quantity: formData.get('quantity'),
+      minStockLimit: formData.get('minStockLimit'),
+    });
+
+    if (!validatedFields.success) {
+      return {
+        type: 'error',
+        errors: validatedFields.error.flatten().fieldErrors,
+        message: 'Invalid data. Please check the form.',
+      };
+    }
+    
+    try {
+      const newItem = await addStockItem(validatedFields.data);
+      // Check if the new item is already low on stock
+      if (newItem.quantity < newItem.minStockLimit) {
+        await sendLowStockAlert(newItem);
+      }
+      revalidatePath('/');
+      revalidatePath('/manage-stock');
+      revalidatePath('/add-stock');
+    } catch (error) {
+      return { type: 'error', message: 'Failed to create stock item.' };
+    }
+  }
+
+  redirect('/manage-stock');
+}
+
+
 export async function createStockItem(prevState: any, formData: FormData) {
   const validatedFields = stockSchema.safeParse({
     name: formData.get('name'),
