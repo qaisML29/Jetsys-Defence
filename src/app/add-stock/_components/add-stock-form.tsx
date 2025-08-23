@@ -47,8 +47,14 @@ export function AddStockForm({ stockItems }: { stockItems: StockItem[] }) {
   const { toast } = useToast();
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [selectedItem, setSelectedItem] = useState<StockItem | null>(null);
-  const [open, setOpen] = useState(false)
-  const [value, setValue] = useState("")
+  
+  const [namePopoverOpen, setNamePopoverOpen] = useState(false)
+  const [nameValue, setNameValue] = useState("")
+
+  const [locationPopoverOpen, setLocationPopoverOpen] = useState(false)
+  const [locationValue, setLocationValue] = useState("")
+
+  const uniqueLocations = [...new Set(stockItems.map(item => item.location))];
 
   useEffect(() => {
     if (state.type === 'error') {
@@ -60,20 +66,19 @@ export function AddStockForm({ stockItems }: { stockItems: StockItem[] }) {
     }
   }, [state, toast]);
   
-  const handleSelect = (item: StockItem) => {
-    setIsUpdateMode(true);
-    setSelectedItem(item);
-    setValue(item.name.toLowerCase());
-  };
-  
-  const handleInputChange = (currentValue: string) => {
-    setValue(currentValue);
-    const existingItem = stockItems.find(item => item.name.toLowerCase() === currentValue.toLowerCase());
+  const handleNameSelect = (currentValue: string) => {
+    const normalizedValue = currentValue.toLowerCase();
+    setNameValue(normalizedValue);
+    const existingItem = stockItems.find(item => item.name.toLowerCase() === normalizedValue);
+    
     if (existingItem) {
-        handleSelect(existingItem);
+        setIsUpdateMode(true);
+        setSelectedItem(existingItem);
+        setLocationValue(existingItem.location); // Pre-fill location
     } else {
         setIsUpdateMode(false);
         setSelectedItem(null);
+        setLocationValue(''); // Clear location if it's a new item
     }
   }
 
@@ -84,16 +89,16 @@ export function AddStockForm({ stockItems }: { stockItems: StockItem[] }) {
 
       <div className="space-y-2">
          <Label htmlFor="name">Item Name</Label>
-          <Popover open={open} onOpenChange={setOpen}>
+          <Popover open={namePopoverOpen} onOpenChange={setNamePopoverOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 role="combobox"
-                aria-expanded={open}
+                aria-expanded={namePopoverOpen}
                 className="w-full justify-between"
                 name="name-trigger"
               >
-                <span className="capitalize">{value ? stockItems.find(item => item.name.toLowerCase() === value)?.name ?? value : "Select or type item..."}</span>
+                <span className="capitalize">{nameValue ? stockItems.find(item => item.name.toLowerCase() === nameValue)?.name ?? nameValue : "Select or type item..."}</span>
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -101,7 +106,7 @@ export function AddStockForm({ stockItems }: { stockItems: StockItem[] }) {
               <Command>
                 <CommandInput 
                   placeholder="Search item or add new..."
-                  onValueChange={handleInputChange}
+                  onValueChange={handleNameSelect}
                   />
                 <CommandList>
                   <CommandEmpty>No item found. Type to add.</CommandEmpty>
@@ -111,14 +116,14 @@ export function AddStockForm({ stockItems }: { stockItems: StockItem[] }) {
                         key={item.id}
                         value={item.name}
                         onSelect={(currentValue) => {
-                          handleInputChange(currentValue);
-                          setOpen(false)
+                          handleNameSelect(currentValue);
+                          setNamePopoverOpen(false)
                         }}
                       >
                         <Check
                           className={cn(
                             "mr-2 h-4 w-4",
-                            value === item.name.toLowerCase() ? "opacity-100" : "opacity-0"
+                            nameValue === item.name.toLowerCase() ? "opacity-100" : "opacity-0"
                           )}
                         />
                         {item.name}
@@ -129,7 +134,7 @@ export function AddStockForm({ stockItems }: { stockItems: StockItem[] }) {
               </Command>
             </PopoverContent>
           </Popover>
-          <input type="hidden" name="name" value={value} />
+          <input type="hidden" name="name" value={nameValue} />
           {state.errors?.name && <p className="text-sm text-destructive">{state.errors.name[0]}</p>}
       </div>
 
@@ -153,11 +158,57 @@ export function AddStockForm({ stockItems }: { stockItems: StockItem[] }) {
             <Input id="category" name="category" placeholder="e.g., Fasteners" required />
             {state.errors?.category && <p className="text-sm text-destructive">{state.errors.category[0]}</p>}
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
-            <Input id="location" name="location" placeholder="e.g., Aisle 5, Shelf B" required />
-            {state.errors?.location && <p className="text-sm text-destructive">{state.errors.location[0]}</p>}
-          </div>
+
+           <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Popover open={locationPopoverOpen} onOpenChange={setLocationPopoverOpen}>
+                    <PopoverTrigger asChild>
+                    <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={locationPopoverOpen}
+                        className="w-full justify-between"
+                    >
+                        {locationValue || "Select or type location..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                    <Command>
+                        <CommandInput 
+                            placeholder="Search location or add new..."
+                            onValueChange={setLocationValue}
+                        />
+                         <CommandList>
+                            <CommandEmpty>No location found. Type to add.</CommandEmpty>
+                            <CommandGroup>
+                                {uniqueLocations.map((location) => (
+                                <CommandItem
+                                    key={location}
+                                    value={location}
+                                    onSelect={(currentValue) => {
+                                        setLocationValue(currentValue === locationValue ? "" : currentValue)
+                                        setLocationPopoverOpen(false)
+                                    }}
+                                >
+                                    <Check
+                                    className={cn(
+                                        "mr-2 h-4 w-4",
+                                        locationValue === location ? "opacity-100" : "opacity-0"
+                                    )}
+                                    />
+                                    {location}
+                                </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                    </PopoverContent>
+                </Popover>
+                <input type="hidden" name="location" value={locationValue} />
+                {state.errors?.location && <p className="text-sm text-destructive">{state.errors.location[0]}</p>}
+            </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="quantity">Quantity</Label>
