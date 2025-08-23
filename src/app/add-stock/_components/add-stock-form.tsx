@@ -135,7 +135,7 @@ export function AddStockForm({ stockItems }: { stockItems: StockItem[] }) {
 
       {isUpdateMode && selectedItem ? (
         <div className="p-4 bg-muted/50 rounded-lg space-y-4">
-            <p className="text-sm font-medium">Restocking: <span className="font-bold">{selectedItem.name}</span></p>
+            <p className="text-sm font-medium">Updating: <span className="font-bold">{selectedItem.name}</span></p>
             <div className="grid grid-cols-2 gap-4">
                 <p className="text-sm">Current Stock: <span className="font-mono">{selectedItem.quantity}</span></p>
                 <p className="text-sm">Location: <span className="font-mono">{selectedItem.location}</span></p>
@@ -188,7 +188,7 @@ function SubmitButton({ isUpdateMode }: { isUpdateMode: boolean }) {
   return (
     <Button type="submit" disabled={pending} className="w-full sm:w-auto bg-accent hover:bg-accent/90">
       {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-      {isUpdateMode ? 'Restock Item' : 'Add New Item'}
+      {isUpdateMode ? 'Update Item' : 'Add New Item'}
     </Button>
   );
 }
