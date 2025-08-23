@@ -54,7 +54,12 @@ export function AddStockForm({ stockItems }: { stockItems: StockItem[] }) {
   const [locationPopoverOpen, setLocationPopoverOpen] = useState(false)
   const [locationValue, setLocationValue] = useState("")
 
+  const [categoryPopoverOpen, setCategoryPopoverOpen] = useState(false)
+  const [categoryValue, setCategoryValue] = useState("")
+
   const uniqueLocations = [...new Set(stockItems.map(item => item.location))];
+  const uniqueCategories = [...new Set(stockItems.map(item => item.category))];
+
 
   useEffect(() => {
     if (state.type === 'error') {
@@ -75,10 +80,12 @@ export function AddStockForm({ stockItems }: { stockItems: StockItem[] }) {
         setIsUpdateMode(true);
         setSelectedItem(existingItem);
         setLocationValue(existingItem.location); // Pre-fill location
+        setCategoryValue(existingItem.category); // Pre-fill category
     } else {
         setIsUpdateMode(false);
         setSelectedItem(null);
         setLocationValue(''); // Clear location if it's a new item
+        setCategoryValue(''); // Clear category if it's a new item
     }
   }
 
@@ -155,7 +162,51 @@ export function AddStockForm({ stockItems }: { stockItems: StockItem[] }) {
         <>
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
-            <Input id="category" name="category" placeholder="e.g., Fasteners" required />
+            <Popover open={categoryPopoverOpen} onOpenChange={setCategoryPopoverOpen}>
+                <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={categoryPopoverOpen}
+                    className="w-full justify-between"
+                >
+                    {categoryValue || "Select or type category..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                <Command>
+                    <CommandInput 
+                        placeholder="Search category or add new..."
+                        onValueChange={setCategoryValue}
+                    />
+                      <CommandList>
+                        <CommandEmpty>No category found. Type to add.</CommandEmpty>
+                        <CommandGroup>
+                            {uniqueCategories.map((category) => (
+                            <CommandItem
+                                key={category}
+                                value={category}
+                                onSelect={(currentValue) => {
+                                    setCategoryValue(currentValue === categoryValue ? "" : currentValue)
+                                    setCategoryPopoverOpen(false)
+                                }}
+                            >
+                                <Check
+                                className={cn(
+                                    "mr-2 h-4 w-4",
+                                    categoryValue === category ? "opacity-100" : "opacity-0"
+                                )}
+                                />
+                                {category}
+                            </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    </CommandList>
+                </Command>
+                </PopoverContent>
+            </Popover>
+            <input type="hidden" name="category" value={categoryValue} />
             {state.errors?.category && <p className="text-sm text-destructive">{state.errors.category[0]}</p>}
           </div>
 
