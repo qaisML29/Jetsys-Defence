@@ -2,9 +2,7 @@
 
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { createStockItem } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
@@ -31,23 +29,16 @@ const initialState = {
 export function AddStockForm() {
   const [state, formAction] = useActionState(createStockItem, initialState);
   const { toast } = useToast();
-  const { reset } = useForm<StockFormData>();
-
+  
   useEffect(() => {
-    if (state.type === 'success') {
-      toast({
-        title: 'Success!',
-        description: state.message,
-      });
-      reset();
-    } else if (state.type === 'error') {
+    if (state.type === 'error') {
       toast({
         title: 'Error',
         description: state.message,
         variant: 'destructive',
       });
     }
-  }, [state, toast, reset]);
+  }, [state, toast]);
 
   return (
     <form action={formAction} className="space-y-6">

@@ -13,6 +13,7 @@ import {
 } from './data';
 import type { AppSettings, StockItem } from '@/types';
 import twilio from 'twilio';
+import { redirect } from 'next/navigation';
 
 const stockSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -82,13 +83,11 @@ export async function createStockItem(prevState: any, formData: FormData) {
 
     revalidatePath('/');
     revalidatePath('/manage-stock');
-    return {
-      type: 'success',
-      message: `Added ${validatedFields.data.name} to stock.`,
-    };
   } catch (error) {
     return { type: 'error', message: 'Failed to create stock item.' };
   }
+  
+  redirect('/manage-stock');
 }
 
 export async function editStockItem(

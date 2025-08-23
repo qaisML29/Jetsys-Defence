@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ManageStockPage() {
   const stockItems = await getStockItems();
 
