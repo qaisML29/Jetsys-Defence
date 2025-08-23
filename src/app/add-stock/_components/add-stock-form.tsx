@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const initialState = {
   type: null,
@@ -18,6 +19,7 @@ const initialState = {
 export function AddStockForm() {
   const [state, formAction] = useActionState(createStockItem, initialState);
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     if (state.type === 'error') {
@@ -27,8 +29,14 @@ export function AddStockForm() {
         variant: 'destructive',
       });
     }
-    // No success toast here, as we redirect
-  }, [state, toast]);
+    if (state.type === 'success') {
+      toast({
+        title: 'Success!',
+        description: 'Item added to inventory.',
+      });
+      router.push('/manage-stock');
+    }
+  }, [state, toast, router]);
 
   return (
     <form action={formAction} className="space-y-6">
