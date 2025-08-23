@@ -126,8 +126,18 @@ const settingsSchema = z.object({
   phoneNumbers: z.array(z.string().regex(/^\+[1-9]\d{1,14}$/, 'Invalid phone number format. E.g. +15551234567')),
 });
 
-export async function saveSettings(data: AppSettings) {
-    const validatedFields = settingsSchema.safeParse(data);
+export async function saveSettings(prevState: any, formData: FormData) {
+    const phoneNumbersRaw = formData.get('phoneNumbers');
+    let phoneNumbers = [];
+    try {
+        if(typeof phoneNumbersRaw === 'string') {
+            phoneNumbers = JSON.parse(phoneNumbersRaw);
+        }
+    } catch (error) {
+        return { type: 'error', message: 'Invalid phone numbers format.' };
+    }
+
+    const validatedFields = settingsSchema.safeParse({ phoneNumbers });
     if (!validatedFields.success) {
         return {
             type: 'error',
@@ -137,9 +147,9 @@ export async function saveSettings(data: AppSettings) {
     }
     
     try {
-        await updateSettings(validatedFields.data);
+        const newSettings = await updateSettings(validatedFields.data);
         revalidatePath('/settings');
-        return { type: 'success', message: 'Settings saved successfully.' };
+        return { type: 'success', message: 'Settings saved successfully.', phoneNumbers: newSettings.phoneNumbers };
     } catch (error) {
         return { type: 'error', message: 'Failed to save settings.' };
     }

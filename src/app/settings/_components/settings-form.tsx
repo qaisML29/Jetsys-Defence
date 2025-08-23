@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useActionState, useState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
 import type { AppSettings } from '@/types';
 import { saveSettings } from '@/lib/actions';
@@ -14,11 +14,34 @@ interface SettingsFormProps {
   currentSettings: AppSettings;
 }
 
+const initialState = {
+  type: null,
+  message: '',
+};
+
 export function SettingsForm({ currentSettings }: SettingsFormProps) {
   const { toast } = useToast();
+  const [state, formAction] = useActionState(saveSettings, initialState);
   const [phoneNumbers, setPhoneNumbers] = useState(currentSettings.phoneNumbers);
   const [newPhoneNumber, setNewPhoneNumber] = useState('');
-  const [isPending, setIsPending] = useState(false);
+
+   useEffect(() => {
+    if (state.type === 'success') {
+      toast({
+        title: 'Success!',
+        description: state.message,
+      });
+       if(state.phoneNumbers) {
+        setPhoneNumbers(state.phoneNumbers)
+       }
+    } else if (state.type === 'error') {
+      toast({
+        title: 'Error',
+        description: state.message,
+        variant: 'destructive',
+      });
+    }
+  }, [state, toast]);
 
   const handleAddPhoneNumber = () => {
     if (newPhoneNumber.trim() && !phoneNumbers.includes(newPhoneNumber.trim())) {
@@ -30,27 +53,12 @@ export function SettingsForm({ currentSettings }: SettingsFormProps) {
   const handleRemovePhoneNumber = (numToRemove: string) => {
     setPhoneNumbers(phoneNumbers.filter(num => num !== numToRemove));
   };
-
-  const handleSave = async () => {
-    setIsPending(true);
-    const result = await saveSettings({ phoneNumbers });
-    if (result.type === 'success') {
-      toast({
-        title: 'Success!',
-        description: result.message,
-      });
-    } else {
-      toast({
-        title: 'Error',
-        description: result.message,
-        variant: 'destructive',
-      });
-    }
-    setIsPending(false);
-  };
+  
+  const { pending } = useFormStatus();
 
   return (
-    <div className="space-y-6">
+    <form action={formAction} className="space-y-6">
+       <input type="hidden" name="phoneNumbers" value={JSON.stringify(phoneNumbers)} />
       <div>
         <Label>Alert Phone Numbers</Label>
         <div className="space-y-2 mt-2">
@@ -79,14 +87,14 @@ export function SettingsForm({ currentSettings }: SettingsFormProps) {
             placeholder="+15551234567"
           />
         </div>
-        <Button variant="outline" onClick={handleAddPhoneNumber} className="h-10">
+        <Button type="button" variant="outline" onClick={handleAddPhoneNumber} className="h-10">
           <Plus className="h-4 w-4 mr-2" /> Add
         </Button>
       </div>
-      <Button onClick={handleSave} disabled={isPending} className="bg-accent hover:bg-accent/90">
-        {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+      <Button type="submit" disabled={pending} className="bg-accent hover:bg-accent/90">
+        {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
         Save Settings
       </Button>
-    </div>
+    </form>
   );
 }
