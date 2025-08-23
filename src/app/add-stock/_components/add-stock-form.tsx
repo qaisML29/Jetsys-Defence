@@ -188,7 +188,7 @@ function SubmitButton({ isUpdateMode }: { isUpdateMode: boolean }) {
   return (
     <Button type="submit" disabled={pending} className="w-full sm:w-auto bg-accent hover:bg-accent/90">
       {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-      {isUpdateMode ? 'Update Item' : 'Add New Item'}
+      {isUpdateMode ? 'Update Item' : 'Update Item'}
     </Button>
   );
 }
