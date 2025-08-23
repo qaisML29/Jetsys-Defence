@@ -123,7 +123,7 @@ export async function logUsageAction(prevState: any, formData: FormData) {
 }
 
 const settingsSchema = z.object({
-  phoneNumbers: z.array(z.string().regex(/^\+[1-9]\d{1,14}$/, 'Invalid phone number format. E.g. +15551234567')),
+  phoneNumbers: z.array(z.string().min(1, 'Phone number cannot be empty.')),
 });
 
 export async function saveSettings(prevState: any, formData: FormData) {
@@ -137,7 +137,15 @@ export async function saveSettings(prevState: any, formData: FormData) {
         return { type: 'error', message: 'Invalid phone numbers format.' };
     }
 
-    const validatedFields = settingsSchema.safeParse({ phoneNumbers });
+    // Filter out any invalid phone numbers before validation
+    const validPhoneNumbers = phoneNumbers.filter((ph: string) => /^\+[1-9]\d{1,14}$/.test(ph));
+    
+    const settingsData = {
+        phoneNumbers: validPhoneNumbers,
+    }
+
+    const validatedFields = settingsSchema.safeParse(settingsData);
+    
     if (!validatedFields.success) {
         return {
             type: 'error',

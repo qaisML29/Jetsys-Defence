@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState, useEffect, useOptimistic } from 'react';
+import { useActionState, useState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
 import type { AppSettings } from '@/types';
 import { saveSettings } from '@/lib/actions';
@@ -23,7 +23,7 @@ const initialState = {
 export function SettingsForm({ currentSettings }: SettingsFormProps) {
   const { toast } = useToast();
   const [state, formAction] = useActionState(saveSettings, initialState);
-  const [phoneNumbers, setPhoneNumbers] = useState(currentSettings.phoneNumbers);
+  const [phoneNumbers, setPhoneNumbers] = useState(currentSettings.phoneNumbers || []);
   const [newPhoneNumber, setNewPhoneNumber] = useState('');
   
   const { pending } = useFormStatus();
