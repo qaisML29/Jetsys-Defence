@@ -14,11 +14,11 @@ interface Db {
 
 const defaultData: Db = {
     stockItems: [
-        { id: '1', name: 'Screws', category: 'Fasteners', quantity: 5000, minStockLimit: 1000, location: 'Aisle 1, Bin A', lastUpdated: new Date().toISOString() },
-        { id: '2', name: 'Nuts', category: 'Fasteners', quantity: 8000, minStockLimit: 2000, location: 'Aisle 1, Bin B', lastUpdated: new Date().toISOString() },
-        { id: '3', name: 'Bolts', category: 'Fasteners', quantity: 300, minStockLimit: 500, location: 'Aisle 1, Bin C', lastUpdated: new Date().toISOString() },
-        { id: '4', name: 'Rivets', category: 'Fasteners', quantity: 10000, minStockLimit: 2500, location: 'Aisle 2, Bin A', lastUpdated: new Date().toISOString() },
-        { id: '5', name: 'Aluminum Plate', category: 'Materials', quantity: 150, minStockLimit: 50, location: 'Yard 1', lastUpdated: new Date().toISOString() },
+        { id: '1', name: 'Screws', category: 'Fasteners', quantity: 4800, minStockLimit: 1000, location: 'Aisle 1, Bin A', lastUpdated: '2025-08-23T12:53:46.821Z' },
+        { id: '2', name: 'Nuts', category: 'Fasteners', quantity: 8000, minStockLimit: 2000, location: 'Aisle 1, Bin B', lastUpdated: '2025-08-23T12:53:46.821Z' },
+        { id: '3', name: 'Bolts', category: 'Fasteners', quantity: 300, minStockLimit: 500, location: 'Aisle 1, Bin C', lastUpdated: '2025-08-23T12:53:46.821Z' },
+        { id: '4', name: 'Rivets', category: 'Fasteners', quantity: 10000, minStockLimit: 2500, location: 'Aisle 2, Bin A', lastUpdated: '2025-08-23T12:53:46.821Z' },
+        { id: '5', name: 'Aluminum Plate', category: 'Materials', quantity: 150, minStockLimit: 50, location: 'Yard 1', lastUpdated: '2025-08-23T12:53:46.821Z' },
     ],
     usageLogs: [
         { id: 'log1', employeeName: 'John Doe', itemId: '1', itemName: 'Screws', quantityUsed: 200, usageDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
@@ -39,7 +39,10 @@ function readDb(): Db {
   } catch (error) {
     console.error("Error reading from db.json, falling back to default data.", error);
   }
-  return JSON.parse(JSON.stringify(defaultData)); // Return a copy to avoid mutation
+  
+  // If db.json doesn't exist, create it with default data
+  writeDb(defaultData);
+  return JSON.parse(JSON.stringify(defaultData)); 
 }
 
 function writeDb(data: Db) {
@@ -50,26 +53,20 @@ function writeDb(data: Db) {
   }
 }
 
-
 // --- API simulation functions ---
-
-const simulateDelay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Stock Items
 export const getStockItems = async (): Promise<StockItem[]> => {
-  await simulateDelay(100);
   const db = readDb();
   return [...db.stockItems].sort((a, b) => a.name.localeCompare(b.name));
 };
 
 export const getStockItem = async (id: string): Promise<StockItem | undefined> => {
-  await simulateDelay(50);
   const db = readDb();
   return db.stockItems.find(item => item.id === id);
 }
 
 export const addStockItem = async (item: Omit<StockItem, 'id' | 'lastUpdated'>): Promise<StockItem> => {
-  await simulateDelay(200);
   const db = readDb();
   const newItem: StockItem = {
     ...item,
@@ -82,7 +79,6 @@ export const addStockItem = async (item: Omit<StockItem, 'id' | 'lastUpdated'>):
 };
 
 export const updateStockItem = async (id: string, updateData: Partial<Omit<StockItem, 'id'>>): Promise<StockItem | null> => {
-  await simulateDelay(200);
   const db = readDb();
   const itemIndex = db.stockItems.findIndex(item => item.id === id);
   if (itemIndex > -1) {
@@ -94,7 +90,6 @@ export const updateStockItem = async (id: string, updateData: Partial<Omit<Stock
 };
 
 export const deleteStockItem = async (id: string): Promise<{ success: boolean }> => {
-  await simulateDelay(200);
   const db = readDb();
   const initialLength = db.stockItems.length;
   db.stockItems = db.stockItems.filter(item => item.id !== id);
@@ -107,13 +102,11 @@ export const deleteStockItem = async (id: string): Promise<{ success: boolean }>
 
 // Usage Logs
 export const getUsageLogs = async (): Promise<UsageLog[]> => {
-  await simulateDelay(100);
   const db = readDb();
   return [...db.usageLogs].sort((a, b) => new Date(b.usageDate).getTime() - new Date(a.usageDate).getTime());
 };
 
 export const addUsageLog = async (log: Omit<UsageLog, 'id' | 'itemName'> & { itemName: string }): Promise<{newLog: UsageLog, updatedItem: StockItem, wasLow: boolean}> => {
-  await simulateDelay(200);
   const db = readDb();
   
   const itemIndex = db.stockItems.findIndex(item => item.id === log.itemId);
@@ -146,13 +139,11 @@ export const addUsageLog = async (log: Omit<UsageLog, 'id' | 'itemName'> & { ite
 
 // Settings
 export const getSettings = async (): Promise<AppSettings> => {
-  await simulateDelay(50);
   const db = readDb();
   return { ...db.settings };
 };
 
 export const updateSettings = async (newSettings: AppSettings): Promise<AppSettings> => {
-  await simulateDelay(200);
   const db = readDb();
   db.settings = { ...newSettings };
   writeDb(db);

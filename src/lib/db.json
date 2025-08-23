@@ -1,0 +1,105 @@
+{
+  "stockItems": [
+    {
+      "id": "1",
+      "name": "Screws",
+      "category": "Fasteners",
+      "quantity": 5000,
+      "minStockLimit": 1000,
+      "location": "Aisle 1, Bin A",
+      "lastUpdated": "2025-08-23T12:53:46.821Z"
+    },
+    {
+      "id": "2",
+      "name": "Nuts",
+      "category": "Fasteners",
+      "quantity": 8000,
+      "minStockLimit": 2000,
+      "location": "Aisle 1, Bin B",
+      "lastUpdated": "2025-08-23T12:53:46.821Z"
+    },
+    {
+      "id": "3",
+      "name": "Bolts",
+      "category": "Fasteners",
+      "quantity": 300,
+      "minStockLimit": 500,
+      "location": "Aisle 1, Bin C",
+      "lastUpdated": "2025-08-23T12:53:46.821Z"
+    },
+    {
+      "id": "4",
+      "name": "Rivets",
+      "category": "Fasteners",
+      "quantity": 10000,
+      "minStockLimit": 2500,
+      "location": "Aisle 2, Bin A",
+      "lastUpdated": "2025-08-23T12:53:46.821Z"
+    },
+    {
+      "id": "5",
+      "name": "Aluminum Plate",
+      "category": "Materials",
+      "quantity": 150,
+      "minStockLimit": 50,
+      "location": "Yard 1",
+      "lastUpdated": "2025-08-23T12:53:46.821Z"
+    },
+    {
+      "name": "bar",
+      "category": "Materials",
+      "location": "Yard 1",
+      "quantity": 4700,
+      "minStockLimit": 500,
+      "id": "1755953680330",
+      "lastUpdated": "2025-08-23T12:57:04.710Z"
+    }
+  ],
+  "usageLogs": [
+    {
+      "id": "log1",
+      "employeeName": "John Doe",
+      "itemId": "1",
+      "itemName": "Screws",
+      "quantityUsed": 200,
+      "usageDate": "2025-08-21T12:53:46.822Z"
+    },
+    {
+      "id": "log2",
+      "employeeName": "Jane Smith",
+      "itemId": "2",
+      "itemName": "Nuts",
+      "quantityUsed": 500,
+      "usageDate": "2025-08-22T12:53:46.822Z"
+    },
+    {
+      "id": "log3",
+      "employeeName": "John Doe",
+      "itemId": "5",
+      "itemName": "Aluminum Plate",
+      "quantityUsed": 5,
+      "usageDate": "2025-08-23T12:53:46.822Z"
+    },
+    {
+      "employeeName": "Ram charan",
+      "itemId": "1755953680330",
+      "quantityUsed": 100,
+      "itemName": "bar",
+      "usageDate": "2025-08-23T12:55:21.864Z",
+      "id": "1755953722064"
+    },
+    {
+      "employeeName": "Ram charan",
+      "itemId": "1755953680330",
+      "quantityUsed": 200,
+      "itemName": "bar",
+      "usageDate": "2025-08-23T12:57:04.510Z",
+      "id": "1755953824710"
+    }
+  ],
+  "settings": {
+    "phoneNumbers": [
+      "9872241604"
+    ]
+  }
+}
