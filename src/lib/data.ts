@@ -69,25 +69,33 @@ export const getUsageLogs = async (): Promise<UsageLog[]> => {
   return [...usageLogs].sort((a, b) => new Date(b.usageDate).getTime() - new Date(a.usageDate).getTime());
 };
 
-export const addUsageLog = async (log: Omit<UsageLog, 'id'>): Promise<UsageLog> => {
+export const addUsageLog = async (log: Omit<UsageLog, 'id' | 'itemName'> & { itemName: string }): Promise<{newLog: UsageLog, updatedItem: StockItem, wasLow: boolean}> => {
   await simulateDelay(500);
   // Transaction simulation
-  const stockItem = stockItems.find(item => item.id === log.itemId);
-  if (!stockItem) {
+  const itemIndex = stockItems.findIndex(item => item.id === log.itemId);
+  if (itemIndex === -1) {
     throw new Error("Item not found");
   }
+  
+  const stockItem = stockItems[itemIndex];
+
   if (stockItem.quantity < log.quantityUsed) {
     throw new Error("Insufficient stock");
   }
+
+  const wasLow = stockItem.quantity < stockItem.minStockLimit;
+
   stockItem.quantity -= log.quantityUsed;
   stockItem.lastUpdated = new Date().toISOString();
   
   const newLog: UsageLog = {
     ...log,
     id: Date.now().toString(),
+    itemName: stockItem.name, // Use the real item name
   };
   usageLogs.push(newLog);
-  return newLog;
+  
+  return { newLog, updatedItem: stockItem, wasLow };
 };
 
 // Settings
