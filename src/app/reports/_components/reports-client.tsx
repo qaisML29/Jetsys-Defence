@@ -96,7 +96,7 @@ export function ReportsClient({ usageLogs, stockItems }: { usageLogs: UsageLog[]
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Date</TableHead>
+                <TableHead>Date & Time</TableHead>
                 <TableHead>Employee</TableHead>
                 <TableHead>Item Used</TableHead>
                 <TableHead className="text-right">Quantity</TableHead>
@@ -105,7 +105,7 @@ export function ReportsClient({ usageLogs, stockItems }: { usageLogs: UsageLog[]
             <TableBody>
               {filteredLogs.map((log) => (
                 <TableRow key={log.id}>
-                  <TableCell>{format(new Date(log.usageDate), 'PPP')}</TableCell>
+                  <TableCell>{format(new Date(log.usageDate), 'Pp p')}</TableCell>
                   <TableCell>{log.employeeName}</TableCell>
                   <TableCell className="font-medium">{log.itemName}</TableCell>
                   <TableCell className="text-right">{log.quantityUsed}</TableCell>
