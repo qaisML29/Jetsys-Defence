@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState, useEffect, useRef } from 'react';
+import { useActionState, useState, useEffect, useOptimistic } from 'react';
 import { useFormStatus } from 'react-dom';
 import type { AppSettings } from '@/types';
 import { saveSettings } from '@/lib/actions';
@@ -17,6 +17,7 @@ interface SettingsFormProps {
 const initialState = {
   type: null,
   message: '',
+  phoneNumbers: [] as string[],
 };
 
 export function SettingsForm({ currentSettings }: SettingsFormProps) {
@@ -24,7 +25,8 @@ export function SettingsForm({ currentSettings }: SettingsFormProps) {
   const [state, formAction] = useActionState(saveSettings, initialState);
   const [phoneNumbers, setPhoneNumbers] = useState(currentSettings.phoneNumbers);
   const [newPhoneNumber, setNewPhoneNumber] = useState('');
-  const formRef = useRef<HTMLFormElement>(null);
+  
+  const { pending } = useFormStatus();
 
    useEffect(() => {
     if (state.type === 'success') {
@@ -33,7 +35,7 @@ export function SettingsForm({ currentSettings }: SettingsFormProps) {
         description: state.message,
       });
        if(state.phoneNumbers) {
-        setPhoneNumbers(state.phoneNumbers)
+        setPhoneNumbers(state.phoneNumbers);
        }
     } else if (state.type === 'error') {
       toast({
@@ -45,8 +47,9 @@ export function SettingsForm({ currentSettings }: SettingsFormProps) {
   }, [state, toast]);
 
   const handleAddPhoneNumber = () => {
-    if (newPhoneNumber.trim() && !phoneNumbers.includes(newPhoneNumber.trim())) {
-      setPhoneNumbers([...phoneNumbers, newPhoneNumber.trim()]);
+    const trimmedNumber = newPhoneNumber.trim();
+    if (trimmedNumber && !phoneNumbers.includes(trimmedNumber)) {
+      setPhoneNumbers([...phoneNumbers, trimmedNumber]);
       setNewPhoneNumber('');
     }
   };
@@ -55,11 +58,14 @@ export function SettingsForm({ currentSettings }: SettingsFormProps) {
     setPhoneNumbers(phoneNumbers.filter(num => num !== numToRemove));
   };
   
-  const { pending } = useFormStatus();
+  // Wrapper action to include the current phone numbers list
+  const wrappedFormAction = (formData: FormData) => {
+    formData.set('phoneNumbers', JSON.stringify(phoneNumbers));
+    formAction(formData);
+  };
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-6">
-       <input type="hidden" name="phoneNumbers" value={JSON.stringify(phoneNumbers)} />
+    <form action={wrappedFormAction} className="space-y-6">
       <div>
         <Label>Alert Phone Numbers</Label>
         <div className="space-y-2 mt-2">
@@ -78,6 +84,9 @@ export function SettingsForm({ currentSettings }: SettingsFormProps) {
               </Button>
             </div>
           ))}
+           {phoneNumbers.length === 0 && (
+            <p className="text-sm text-muted-foreground">No phone numbers added yet.</p>
+          )}
         </div>
       </div>
       <div className="flex items-end gap-2">
