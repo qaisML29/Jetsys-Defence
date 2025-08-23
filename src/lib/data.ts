@@ -1,24 +1,55 @@
 import type { StockItem, UsageLog, AppSettings } from '@/types';
+import fs from 'fs';
+import path from 'path';
 
-// --- In-memory database simulation ---
+// --- File-based database ---
 
-let stockItems: StockItem[] = [
-  { id: '1', name: 'Screws', category: 'Fasteners', quantity: 5000, minStockLimit: 1000, location: 'Aisle 1, Bin A', lastUpdated: new Date().toISOString() },
-  { id: '2', name: 'Nuts', category: 'Fasteners', quantity: 8000, minStockLimit: 2000, location: 'Aisle 1, Bin B', lastUpdated: new Date().toISOString() },
-  { id: '3', name: 'Bolts', category: 'Fasteners', quantity: 300, minStockLimit: 500, location: 'Aisle 1, Bin C', lastUpdated: new Date().toISOString() },
-  { id: '4', name: 'Rivets', category: 'Fasteners', quantity: 10000, minStockLimit: 2500, location: 'Aisle 2, Bin A', lastUpdated: new Date().toISOString() },
-  { id: '5', name: 'Aluminum Plate', category: 'Materials', quantity: 150, minStockLimit: 50, location: 'Yard 1', lastUpdated: new Date().toISOString() },
-];
+const dataFilePath = path.join(process.cwd(), 'src', 'lib', 'db.json');
 
-let usageLogs: UsageLog[] = [
-    { id: 'log1', employeeName: 'John Doe', itemId: '1', itemName: 'Screws', quantityUsed: 200, usageDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
-    { id: 'log2', employeeName: 'Jane Smith', itemId: '2', itemName: 'Nuts', quantityUsed: 500, usageDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() },
-    { id: 'log3', employeeName: 'John Doe', itemId: '5', itemName: 'Aluminum Plate', quantityUsed: 5, usageDate: new Date().toISOString() },
-];
+interface Db {
+  stockItems: StockItem[];
+  usageLogs: UsageLog[];
+  settings: AppSettings;
+}
 
-let settings: AppSettings = {
-  phoneNumbers: ['9872241604'],
+const defaultData: Db = {
+    stockItems: [
+        { id: '1', name: 'Screws', category: 'Fasteners', quantity: 5000, minStockLimit: 1000, location: 'Aisle 1, Bin A', lastUpdated: new Date().toISOString() },
+        { id: '2', name: 'Nuts', category: 'Fasteners', quantity: 8000, minStockLimit: 2000, location: 'Aisle 1, Bin B', lastUpdated: new Date().toISOString() },
+        { id: '3', name: 'Bolts', category: 'Fasteners', quantity: 300, minStockLimit: 500, location: 'Aisle 1, Bin C', lastUpdated: new Date().toISOString() },
+        { id: '4', name: 'Rivets', category: 'Fasteners', quantity: 10000, minStockLimit: 2500, location: 'Aisle 2, Bin A', lastUpdated: new Date().toISOString() },
+        { id: '5', name: 'Aluminum Plate', category: 'Materials', quantity: 150, minStockLimit: 50, location: 'Yard 1', lastUpdated: new Date().toISOString() },
+    ],
+    usageLogs: [
+        { id: 'log1', employeeName: 'John Doe', itemId: '1', itemName: 'Screws', quantityUsed: 200, usageDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
+        { id: 'log2', employeeName: 'Jane Smith', itemId: '2', itemName: 'Nuts', quantityUsed: 500, usageDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() },
+        { id: 'log3', employeeName: 'John Doe', itemId: '5', itemName: 'Aluminum Plate', quantityUsed: 5, usageDate: new Date().toISOString() },
+    ],
+    settings: {
+        phoneNumbers: ['9872241604'],
+    }
 };
+
+function readDb(): Db {
+  try {
+    if (fs.existsSync(dataFilePath)) {
+      const fileContent = fs.readFileSync(dataFilePath, 'utf-8');
+      return JSON.parse(fileContent);
+    }
+  } catch (error) {
+    console.error("Error reading from db.json, falling back to default data.", error);
+  }
+  return JSON.parse(JSON.stringify(defaultData)); // Return a copy to avoid mutation
+}
+
+function writeDb(data: Db) {
+  try {
+    fs.writeFileSync(dataFilePath, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (error) {
+    console.error("Error writing to db.json.", error);
+  }
+}
+
 
 // --- API simulation functions ---
 
@@ -26,58 +57,71 @@ const simulateDelay = (ms: number) => new Promise(resolve => setTimeout(resolve,
 
 // Stock Items
 export const getStockItems = async (): Promise<StockItem[]> => {
-  await simulateDelay(500);
-  return [...stockItems].sort((a, b) => a.name.localeCompare(b.name));
+  await simulateDelay(100);
+  const db = readDb();
+  return [...db.stockItems].sort((a, b) => a.name.localeCompare(b.name));
 };
 
 export const getStockItem = async (id: string): Promise<StockItem | undefined> => {
-  await simulateDelay(300);
-  return stockItems.find(item => item.id === id);
+  await simulateDelay(50);
+  const db = readDb();
+  return db.stockItems.find(item => item.id === id);
 }
 
 export const addStockItem = async (item: Omit<StockItem, 'id' | 'lastUpdated'>): Promise<StockItem> => {
-  await simulateDelay(500);
+  await simulateDelay(200);
+  const db = readDb();
   const newItem: StockItem = {
     ...item,
     id: Date.now().toString(),
     lastUpdated: new Date().toISOString(),
   };
-  stockItems.push(newItem);
+  db.stockItems.push(newItem);
+  writeDb(db);
   return newItem;
 };
 
 export const updateStockItem = async (id: string, updateData: Partial<Omit<StockItem, 'id'>>): Promise<StockItem | null> => {
-  await simulateDelay(500);
-  const itemIndex = stockItems.findIndex(item => item.id === id);
+  await simulateDelay(200);
+  const db = readDb();
+  const itemIndex = db.stockItems.findIndex(item => item.id === id);
   if (itemIndex > -1) {
-    stockItems[itemIndex] = { ...stockItems[itemIndex], ...updateData, lastUpdated: new Date().toISOString() };
-    return stockItems[itemIndex];
+    db.stockItems[itemIndex] = { ...db.stockItems[itemIndex], ...updateData, lastUpdated: new Date().toISOString() };
+    writeDb(db);
+    return db.stockItems[itemIndex];
   }
   return null;
 };
 
 export const deleteStockItem = async (id: string): Promise<{ success: boolean }> => {
-  await simulateDelay(500);
-  const initialLength = stockItems.length;
-  stockItems = stockItems.filter(item => item.id !== id);
-  return { success: stockItems.length < initialLength };
+  await simulateDelay(200);
+  const db = readDb();
+  const initialLength = db.stockItems.length;
+  db.stockItems = db.stockItems.filter(item => item.id !== id);
+  const success = db.stockItems.length < initialLength;
+  if(success) {
+      writeDb(db);
+  }
+  return { success };
 };
 
 // Usage Logs
 export const getUsageLogs = async (): Promise<UsageLog[]> => {
-  await simulateDelay(500);
-  return [...usageLogs].sort((a, b) => new Date(b.usageDate).getTime() - new Date(a.usageDate).getTime());
+  await simulateDelay(100);
+  const db = readDb();
+  return [...db.usageLogs].sort((a, b) => new Date(b.usageDate).getTime() - new Date(a.usageDate).getTime());
 };
 
 export const addUsageLog = async (log: Omit<UsageLog, 'id' | 'itemName'> & { itemName: string }): Promise<{newLog: UsageLog, updatedItem: StockItem, wasLow: boolean}> => {
-  await simulateDelay(500);
-  // Transaction simulation
-  const itemIndex = stockItems.findIndex(item => item.id === log.itemId);
+  await simulateDelay(200);
+  const db = readDb();
+  
+  const itemIndex = db.stockItems.findIndex(item => item.id === log.itemId);
   if (itemIndex === -1) {
     throw new Error("Item not found");
   }
   
-  const stockItem = stockItems[itemIndex];
+  const stockItem = db.stockItems[itemIndex];
 
   if (stockItem.quantity < log.quantityUsed) {
     throw new Error("Insufficient stock");
@@ -91,21 +135,26 @@ export const addUsageLog = async (log: Omit<UsageLog, 'id' | 'itemName'> & { ite
   const newLog: UsageLog = {
     ...log,
     id: Date.now().toString(),
-    itemName: stockItem.name, // Use the real item name
+    itemName: stockItem.name, 
   };
-  usageLogs.push(newLog);
+  db.usageLogs.push(newLog);
+  
+  writeDb(db);
   
   return { newLog, updatedItem: stockItem, wasLow };
 };
 
 // Settings
 export const getSettings = async (): Promise<AppSettings> => {
-  await simulateDelay(200);
-  return { ...settings };
+  await simulateDelay(50);
+  const db = readDb();
+  return { ...db.settings };
 };
 
 export const updateSettings = async (newSettings: AppSettings): Promise<AppSettings> => {
-  await simulateDelay(500);
-  settings = { ...newSettings };
-  return { ...settings };
+  await simulateDelay(200);
+  const db = readDb();
+  db.settings = { ...newSettings };
+  writeDb(db);
+  return { ...db.settings };
 };
