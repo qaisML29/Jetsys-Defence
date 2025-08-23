@@ -1,0 +1,21 @@
+export interface StockItem {
+  id: string;
+  name: string;
+  category: string;
+  quantity: number;
+  minStockLimit: number;
+  lastUpdated: string;
+}
+
+export interface UsageLog {
+  id: string;
+  employeeName: string;
+  itemId: string;
+  itemName: string;
+  quantityUsed: number;
+  usageDate: string;
+}
+
+export interface AppSettings {
+  phoneNumbers: string[];
+}
