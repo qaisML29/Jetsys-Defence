@@ -20,6 +20,7 @@ const stockSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   location: z.string().min(1, 'Location is required'),
   quantity: z.coerce.number().int().min(0, 'Quantity cannot be negative'),
+  quantityKg: z.coerce.number().min(0, 'Quantity KG cannot be negative').optional(),
   minStockLimit: z.coerce
     .number()
     .int()
@@ -57,13 +58,15 @@ async function sendLowStockAlert(item: StockItem) {
 }
 
 export async function createStockItem(prevState: any, formData: FormData) {
-  const validatedFields = stockSchema.safeParse({
+  const rawData = {
     name: formData.get('name'),
     category: formData.get('category'),
     location: formData.get('location'),
     quantity: formData.get('quantity'),
+    quantityKg: formData.get('quantityKg') || undefined,
     minStockLimit: formData.get('minStockLimit'),
-  });
+  };
+  const validatedFields = stockSchema.safeParse(rawData);
 
   if (!validatedFields.success) {
     return {
@@ -96,13 +99,16 @@ export async function editStockItem(
   prevState: any,
   formData: FormData
 ) {
-  const validatedFields = stockSchema.safeParse({
+  const rawData = {
     name: formData.get('name'),
     category: formData.get('category'),
     location: formData.get('location'),
     quantity: formData.get('quantity'),
+    quantityKg: formData.get('quantityKg') || undefined,
     minStockLimit: formData.get('minStockLimit'),
-  });
+  };
+
+  const validatedFields = stockSchema.safeParse(rawData);
 
   if (!validatedFields.success) {
     return {

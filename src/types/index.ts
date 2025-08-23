@@ -3,6 +3,7 @@ export interface StockItem {
   name: string;
   category: string;
   quantity: number;
+  quantityKg?: number;
   minStockLimit: number;
   location: string;
   lastUpdated: string;

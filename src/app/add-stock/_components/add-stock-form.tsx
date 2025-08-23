@@ -20,6 +20,7 @@ const initialState = {
 export function AddStockForm() {
   const [state, formAction] = useActionState(createStockItem, initialState);
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     if (state.type === 'error') {
@@ -29,8 +30,12 @@ export function AddStockForm() {
         variant: 'destructive',
       });
     }
-    // Success case is now handled by server-side redirect
-  }, [state, toast]);
+    if (state.type === 'success') {
+      // This is now handled by server-side redirect in the action
+      // but as a fallback, we could navigate here.
+      // router.push('/manage-stock');
+    }
+  }, [state, toast, router]);
 
   return (
     <form action={formAction} className="space-y-6">
@@ -52,11 +57,16 @@ export function AddStockForm() {
         {state.errors?.location && <p className="text-sm text-destructive">{state.errors.location[0]}</p>}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="space-y-2">
           <Label htmlFor="quantity">Quantity</Label>
           <Input id="quantity" name="quantity" type="number" placeholder="e.g., 5000" required />
           {state.errors?.quantity && <p className="text-sm text-destructive">{state.errors.quantity[0]}</p>}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="quantityKg">Quantity (KG)</Label>
+          <Input id="quantityKg" name="quantityKg" type="number" placeholder="e.g., 12.5" step="any" />
+          {state.errors?.quantityKg && <p className="text-sm text-destructive">{state.errors.quantityKg[0]}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="minStockLimit">Minimum Stock Limit</Label>

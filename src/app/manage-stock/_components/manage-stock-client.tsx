@@ -49,6 +49,7 @@ export function ManageStockClient({ stockItems }: ManageStockClientProps) {
             <TableHead>Category</TableHead>
             <TableHead>Location</TableHead>
             <TableHead className="text-right">Quantity</TableHead>
+            <TableHead className="text-right">Quantity (KG)</TableHead>
             <TableHead className="text-right">Min. Stock</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -60,6 +61,7 @@ export function ManageStockClient({ stockItems }: ManageStockClientProps) {
               <TableCell>{item.category}</TableCell>
               <TableCell>{item.location}</TableCell>
               <TableCell className="text-right">{item.quantity}</TableCell>
+              <TableCell className="text-right">{item.quantityKg ?? 'N/A'}</TableCell>
               <TableCell className="text-right">{item.minStockLimit}</TableCell>
               <TableCell className="text-right space-x-2">
                 <Dialog open={editingItem?.id === item.id} onOpenChange={(isOpen) => !isOpen && setEditingItem(null)}>

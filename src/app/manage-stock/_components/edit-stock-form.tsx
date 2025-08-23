@@ -22,6 +22,7 @@ const stockSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   location: z.string().min(1, 'Location is required'),
   quantity: z.coerce.number().min(0, 'Quantity cannot be negative'),
+  quantityKg: z.coerce.number().min(0, 'Quantity KG cannot be negative').optional(),
   minStockLimit: z.coerce.number().min(0, 'Minimum stock cannot be negative'),
 });
 
@@ -70,11 +71,16 @@ export function EditStockForm({ item, onUpdateSuccess }: EditStockFormProps) {
         <Input id="location" name="location" defaultValue={item.location} required />
         {state.errors?.location && <p className="text-sm text-destructive">{state.errors.location[0]}</p>}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="space-y-2">
           <Label htmlFor="quantity">Quantity</Label>
           <Input id="quantity" name="quantity" type="number" defaultValue={item.quantity} required />
            {state.errors?.quantity && <p className="text-sm text-destructive">{state.errors.quantity[0]}</p>}
+        </div>
+         <div className="space-y-2">
+          <Label htmlFor="quantityKg">Quantity (KG)</Label>
+          <Input id="quantityKg" name="quantityKg" type="number" defaultValue={item.quantityKg} step="any" />
+          {state.errors?.quantityKg && <p className="text-sm text-destructive">{state.errors.quantityKg[0]}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="minStockLimit">Minimum Stock Limit</Label>
