@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState, useEffect, useOptimistic } from 'react';
+import { useActionState, useState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import type { AppSettings } from '@/types';
 import { saveSettings } from '@/lib/actions';
@@ -24,6 +24,7 @@ export function SettingsForm({ currentSettings }: SettingsFormProps) {
   const [state, formAction] = useActionState(saveSettings, initialState);
   const [phoneNumbers, setPhoneNumbers] = useState(currentSettings.phoneNumbers);
   const [newPhoneNumber, setNewPhoneNumber] = useState('');
+  const formRef = useRef<HTMLFormElement>(null);
 
    useEffect(() => {
     if (state.type === 'success') {
@@ -57,7 +58,7 @@ export function SettingsForm({ currentSettings }: SettingsFormProps) {
   const { pending } = useFormStatus();
 
   return (
-    <form action={formAction} className="space-y-6">
+    <form ref={formRef} action={formAction} className="space-y-6">
        <input type="hidden" name="phoneNumbers" value={JSON.stringify(phoneNumbers)} />
       <div>
         <Label>Alert Phone Numbers</Label>
@@ -71,6 +72,7 @@ export function SettingsForm({ currentSettings }: SettingsFormProps) {
                 size="icon"
                 className="text-destructive hover:text-destructive"
                 onClick={() => handleRemovePhoneNumber(num)}
+                disabled={pending}
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -86,9 +88,10 @@ export function SettingsForm({ currentSettings }: SettingsFormProps) {
             value={newPhoneNumber}
             onChange={(e) => setNewPhoneNumber(e.target.value)}
             placeholder="+15551234567"
+            disabled={pending}
           />
         </div>
-        <Button type="button" variant="outline" onClick={handleAddPhoneNumber} className="h-10">
+        <Button type="button" variant="outline" onClick={handleAddPhoneNumber} className="h-10" disabled={pending}>
           <Plus className="h-4 w-4 mr-2" /> Add
         </Button>
       </div>
