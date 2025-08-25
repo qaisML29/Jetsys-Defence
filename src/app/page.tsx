@@ -46,9 +46,9 @@ async function StockTable() {
             <TableHeader>
               <TableRow>
                 <TableHead>Item Name</TableHead>
-                <TableHead>Category</TableHead>
+                <TableHead className="hidden md:table-cell">Category</TableHead>
                 <TableHead className="text-right">Quantity</TableHead>
-                <TableHead className="text-right">Min. Stock</TableHead>
+                <TableHead className="hidden sm:table-cell text-right">Min. Stock</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -56,9 +56,9 @@ async function StockTable() {
               {lowStockItems.map((item) => (
                 <TableRow key={item.id} className="bg-destructive/10">
                   <TableCell className="font-medium">{item.name}</TableCell>
-                  <TableCell>{item.category}</TableCell>
+                  <TableCell className="hidden md:table-cell">{item.category}</TableCell>
                   <TableCell className="text-right">{item.quantity}</TableCell>
-                  <TableCell className="text-right">{item.minStockLimit}</TableCell>
+                  <TableCell className="hidden sm:table-cell text-right">{item.minStockLimit}</TableCell>
                   <TableCell>
                     <Badge variant="destructive">Low Stock</Badge>
                   </TableCell>

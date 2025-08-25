@@ -96,20 +96,20 @@ export function ReportsClient({ usageLogs, stockItems }: { usageLogs: UsageLog[]
             <TableHeader>
               <TableRow>
                 <TableHead>Date & Time</TableHead>
-                <TableHead>Employee</TableHead>
+                <TableHead className="hidden sm:table-cell">Employee</TableHead>
                 <TableHead>Item Used</TableHead>
                 <TableHead className="text-right">Quantity</TableHead>
-                <TableHead className="text-right">Quantity (KG)</TableHead>
+                <TableHead className="hidden md:table-cell text-right">Quantity (KG)</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredLogs.map((log) => (
                 <TableRow key={log.id}>
                   <TableCell>{format(new Date(log.usageDate), 'Pp p')}</TableCell>
-                  <TableCell>{log.employeeName}</TableCell>
+                  <TableCell className="hidden sm:table-cell">{log.employeeName}</TableCell>
                   <TableCell className="font-medium">{log.itemName}</TableCell>
                   <TableCell className="text-right">{log.quantityUsed ?? 'N/A'}</TableCell>
-                  <TableCell className="text-right">{log.quantityKgUsed ?? 'N/A'}</TableCell>
+                  <TableCell className="hidden md:table-cell text-right">{log.quantityKgUsed ?? 'N/A'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

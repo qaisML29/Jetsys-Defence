@@ -47,11 +47,11 @@ export function ManageStockClient({ stockItems, categories }: ManageStockClientP
         <TableHeader>
           <TableRow>
             <TableHead>Item Name</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Location</TableHead>
+            <TableHead className="hidden md:table-cell">Category</TableHead>
+            <TableHead className="hidden sm:table-cell">Location</TableHead>
             <TableHead className="text-right">Quantity</TableHead>
-            <TableHead className="text-right">Quantity (KG)</TableHead>
-            <TableHead className="text-right">Min. Stock</TableHead>
+            <TableHead className="hidden lg:table-cell text-right">Quantity (KG)</TableHead>
+            <TableHead className="hidden lg:table-cell text-right">Min. Stock</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -59,11 +59,11 @@ export function ManageStockClient({ stockItems, categories }: ManageStockClientP
           {stockItems.map((item) => (
             <TableRow key={item.id}>
               <TableCell className="font-medium">{item.name}</TableCell>
-              <TableCell>{item.category}</TableCell>
-              <TableCell>{item.location}</TableCell>
+              <TableCell className="hidden md:table-cell">{item.category}</TableCell>
+              <TableCell className="hidden sm:table-cell">{item.location}</TableCell>
               <TableCell className="text-right">{item.quantity}</TableCell>
-              <TableCell className="text-right">{item.quantityKg ?? 'N/A'}</TableCell>
-              <TableCell className="text-right">{item.minStockLimit}</TableCell>
+              <TableCell className="hidden lg:table-cell text-right">{item.quantityKg ?? 'N/A'}</TableCell>
+              <TableCell className="hidden lg:table-cell text-right">{item.minStockLimit}</TableCell>
               <TableCell className="text-right">
                 <div className="flex flex-col sm:flex-row justify-end items-center gap-2">
                   <Dialog open={editingItem?.id === item.id} onOpenChange={(isOpen) => !isOpen && setEditingItem(null)}>
