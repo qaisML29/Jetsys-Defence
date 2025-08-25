@@ -157,9 +157,8 @@ export async function editStockItem(
     const updatedItem = await updateStockItem(id, validatedFields.data);
 
     if (updatedItem) {
-      const isLow = updatedItem.quantity < updatedItem.minStockLimit;
       // Trigger alert if it is low
-      if (isLow) {
+      if (updatedItem.quantity < updatedItem.minStockLimit) {
         await sendLowStockAlert(updatedItem);
       }
     }
@@ -215,16 +214,14 @@ export async function logUsageAction(prevState: any, formData: FormData) {
   }
 
   try {
-    const { updatedItem, wasLow } = await addUsageLog({
+    const { updatedItem } = await addUsageLog({
       ...validatedFields.data,
       itemName: '', // Will be set in addUsageLog
       usageDate: new Date().toISOString(),
     });
     
-    const isNowLow = updatedItem.quantity < updatedItem.minStockLimit;
-
-    // Check if the item's state changed from not-low to low.
-    if (isNowLow && !wasLow) {
+    // Check if the item's quantity is now below the minimum limit
+    if (updatedItem.quantity < updatedItem.minStockLimit) {
       await sendLowStockAlert(updatedItem);
     }
 

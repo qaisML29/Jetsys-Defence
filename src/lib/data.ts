@@ -121,7 +121,7 @@ export const getUsageLogs = async (): Promise<UsageLog[]> => {
   return [...db.usageLogs].sort((a, b) => new Date(b.usageDate).getTime() - new Date(a.usageDate).getTime());
 };
 
-export const addUsageLog = async (log: Omit<UsageLog, 'id' | 'itemName'> & { itemName: string }): Promise<{newLog: UsageLog, updatedItem: StockItem, wasLow: boolean}> => {
+export const addUsageLog = async (log: Omit<UsageLog, 'id' | 'itemName'> & { itemName: string }): Promise<{newLog: UsageLog, updatedItem: StockItem}> => {
   const db = readDb();
   
   const itemIndex = db.stockItems.findIndex(item => item.id === log.itemId);
@@ -144,9 +144,6 @@ export const addUsageLog = async (log: Omit<UsageLog, 'id' | 'itemName'> & { ite
       }
   }
 
-
-  const wasLow = stockItem.quantity < stockItem.minStockLimit;
-
   if(log.quantityUsed) {
     stockItem.quantity -= log.quantityUsed;
   }
@@ -165,7 +162,7 @@ export const addUsageLog = async (log: Omit<UsageLog, 'id' | 'itemName'> & { ite
   
   writeDb(db);
   
-  return { newLog, updatedItem: stockItem, wasLow };
+  return { newLog, updatedItem: stockItem };
 };
 
 // Settings
