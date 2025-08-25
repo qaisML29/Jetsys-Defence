@@ -64,28 +64,30 @@ export function ManageStockClient({ stockItems, categories }: ManageStockClientP
               <TableCell className="text-right">{item.quantity}</TableCell>
               <TableCell className="text-right">{item.quantityKg ?? 'N/A'}</TableCell>
               <TableCell className="text-right">{item.minStockLimit}</TableCell>
-              <TableCell className="text-right space-x-2">
-                <Dialog open={editingItem?.id === item.id} onOpenChange={(isOpen) => !isOpen && setEditingItem(null)}>
-                  <DialogTrigger asChild>
-                    <Button variant="ghost" size="icon" onClick={() => setEditingItem(item)}>
-                      <Edit className="h-4 w-4" />
-                      <span className="sr-only">Edit</span>
+              <TableCell className="text-right">
+                <div className="flex flex-col sm:flex-row justify-end items-center gap-2">
+                  <Dialog open={editingItem?.id === item.id} onOpenChange={(isOpen) => !isOpen && setEditingItem(null)}>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="icon" onClick={() => setEditingItem(item)}>
+                        <Edit className="h-4 w-4" />
+                        <span className="sr-only">Edit</span>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Edit {item.name}</DialogTitle>
+                      </DialogHeader>
+                      <EditStockForm item={item} categories={categories} onUpdateSuccess={onUpdateSuccess} />
+                    </DialogContent>
+                  </Dialog>
+                  
+                  <DeleteStockAlert item={item} onDeleteSuccess={onDeleteSuccess}>
+                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Delete</span>
                     </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Edit {item.name}</DialogTitle>
-                    </DialogHeader>
-                    <EditStockForm item={item} categories={categories} onUpdateSuccess={onUpdateSuccess} />
-                  </DialogContent>
-                </Dialog>
-                
-                <DeleteStockAlert item={item} onDeleteSuccess={onDeleteSuccess}>
-                  <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Delete</span>
-                  </Button>
-                </DeleteStockAlert>
+                  </DeleteStockAlert>
+                </div>
               </TableCell>
             </TableRow>
           ))}

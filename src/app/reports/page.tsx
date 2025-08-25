@@ -1,9 +1,14 @@
 import { PageHeader } from '@/components/page-header';
 import { getUsageLogs, getStockItems } from '@/lib/data';
-import { ReportsClient } from './_components/reports-client';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import dynamic from 'next/dynamic';
+
+const ReportsClient = dynamic(() => import('./_components/reports-client').then(mod => mod.ReportsClient), { 
+    ssr: false,
+    loading: () => <ReportsSkeleton />
+});
 
 export default function ReportsPage() {
   return (
