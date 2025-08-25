@@ -34,7 +34,7 @@
       "quantity": 1000,
       "minStockLimit": 2500,
       "location": "Aisle 2, Bin A",
-      "lastUpdated": "2025-08-25T06:18:07.192Z"
+      "lastUpdated": "2025-08-25T06:23:38.152Z"
     },
     {
       "id": "5",
@@ -130,6 +130,15 @@
       "itemName": "Rivets",
       "usageDate": "2025-08-25T06:18:07.192Z",
       "id": "1756102687192"
+    },
+    {
+      "employeeName": "Ram charan",
+      "itemId": "4",
+      "quantityUsed": 2000,
+      "quantityKgUsed": 0,
+      "itemName": "Rivets",
+      "usageDate": "2025-08-25T06:23:38.151Z",
+      "id": "1756103018152"
     }
   ],
   "settings": {

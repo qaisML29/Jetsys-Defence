@@ -26,7 +26,7 @@ const defaultData: Db = {
         { id: 'log3', employeeName: 'John Doe', itemId: '5', itemName: 'Aluminum Plate', quantityUsed: 5, quantityKgUsed: 12.5, usageDate: new Date().toISOString() },
     ],
     settings: {
-        phoneNumbers: ['9872241604'],
+        phoneNumbers: ['8369890007', '9372241654'],
     }
 };
 
