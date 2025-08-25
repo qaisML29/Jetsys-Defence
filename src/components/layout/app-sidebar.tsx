@@ -16,7 +16,6 @@ import {
   ListOrdered,
   FileText,
   BarChart2,
-  Settings,
   Shield,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -28,7 +27,6 @@ const menuItems = [
   { href: '/manage-stock', label: 'Manage Stock', icon: ListOrdered },
   { href: '/usage', label: 'Usage Form', icon: FileText },
   { href: '/reports', label: 'Reports', icon: BarChart2 },
-  { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
 export function AppSidebar() {
