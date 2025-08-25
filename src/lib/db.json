@@ -53,16 +53,6 @@
       "minStockLimit": 500,
       "id": "1755953680330",
       "lastUpdated": "2025-08-23T12:57:04.710Z"
-    },
-    {
-      "name": "aluminium sheet",
-      "category": "Materials",
-      "location": "Yard 1",
-      "quantity": 5000,
-      "quantityKg": 400,
-      "minStockLimit": 200,
-      "id": "1755955855365",
-      "lastUpdated": "2025-08-23T13:31:13.922Z"
     }
   ],
   "usageLogs": [
