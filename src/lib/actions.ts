@@ -46,7 +46,7 @@ async function sendLowStockAlert(item: StockItem) {
         await client.messages.create({
           body: message,
           from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`, // Your Twilio WhatsApp number
-          to: `whatsapp:${phoneNumber}`
+          to: `whatsapp:${phoneNumber.startsWith('+') ? phoneNumber : '+' + phoneNumber}`
         });
         console.log(`Successfully sent WhatsApp message to ${phoneNumber}`);
       } catch (error) {

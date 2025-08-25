@@ -22,19 +22,19 @@
       "id": "3",
       "name": "Bolts",
       "category": "Fasteners",
-      "quantity": 300,
+      "quantity": 1000,
       "minStockLimit": 500,
       "location": "Aisle 1, Bin C",
-      "lastUpdated": "2025-08-23T12:53:46.821Z"
+      "lastUpdated": "2025-08-25T05:54:40.162Z"
     },
     {
       "id": "4",
       "name": "Rivets",
       "category": "Fasteners",
-      "quantity": 10000,
+      "quantity": 1000,
       "minStockLimit": 2500,
       "location": "Aisle 2, Bin A",
-      "lastUpdated": "2025-08-23T12:53:46.821Z"
+      "lastUpdated": "2025-08-25T05:55:43.949Z"
     },
     {
       "id": "5",
@@ -103,6 +103,24 @@
       "itemName": "aluminium sheet",
       "usageDate": "2025-08-23T13:31:13.921Z",
       "id": "1755955873922"
+    },
+    {
+      "employeeName": "Ram charan",
+      "itemId": "4",
+      "quantityUsed": 2000,
+      "quantityKgUsed": 0,
+      "itemName": "Rivets",
+      "usageDate": "2025-08-25T05:55:15.281Z",
+      "id": "1756101315282"
+    },
+    {
+      "employeeName": "Ram charan",
+      "itemId": "4",
+      "quantityUsed": 7000,
+      "quantityKgUsed": 0,
+      "itemName": "Rivets",
+      "usageDate": "2025-08-25T05:55:43.949Z",
+      "id": "1756101343949"
     }
   ],
   "settings": {
