@@ -14,7 +14,8 @@ export interface UsageLog {
   employeeName: string;
   itemId: string;
   itemName: string;
-  quantityUsed: number;
+  quantityUsed?: number;
+  quantityKgUsed?: number;
   usageDate: string;
 }
 

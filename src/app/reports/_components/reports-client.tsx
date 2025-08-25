@@ -36,7 +36,7 @@ export function ReportsClient({ usageLogs, stockItems }: { usageLogs: UsageLog[]
 
   const usageByItem = useMemo(() => {
     return filteredLogs.reduce((acc, log) => {
-      acc[log.itemName] = (acc[log.itemName] || 0) + log.quantityUsed;
+      acc[log.itemName] = (acc[log.itemName] || 0) + (log.quantityUsed || 0);
       return acc;
     }, {} as Record<string, number>);
   }, [filteredLogs]);
@@ -100,6 +100,7 @@ export function ReportsClient({ usageLogs, stockItems }: { usageLogs: UsageLog[]
                 <TableHead>Employee</TableHead>
                 <TableHead>Item Used</TableHead>
                 <TableHead className="text-right">Quantity</TableHead>
+                <TableHead className="text-right">Quantity (KG)</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -108,7 +109,8 @@ export function ReportsClient({ usageLogs, stockItems }: { usageLogs: UsageLog[]
                   <TableCell>{format(new Date(log.usageDate), 'Pp p')}</TableCell>
                   <TableCell>{log.employeeName}</TableCell>
                   <TableCell className="font-medium">{log.itemName}</TableCell>
-                  <TableCell className="text-right">{log.quantityUsed}</TableCell>
+                  <TableCell className="text-right">{log.quantityUsed ?? 'N/A'}</TableCell>
+                  <TableCell className="text-right">{log.quantityKgUsed ?? 'N/A'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

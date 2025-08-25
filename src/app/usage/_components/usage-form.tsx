@@ -42,8 +42,13 @@ interface UsageFormProps {
 const usageSchema = z.object({
   employeeName: z.string().min(3, 'Employee name is required'),
   itemId: z.string().min(1, 'You must select an item'),
-  quantityUsed: z.coerce.number().min(1, 'Quantity must be at least 1'),
+  quantityUsed: z.coerce.number().min(0, 'Quantity must be non-negative').optional(),
+  quantityKgUsed: z.coerce.number().min(0, 'Quantity (KG) must be non-negative').optional(),
+}).refine(data => data.quantityUsed || data.quantityKgUsed, {
+    message: 'At least one quantity field must be filled',
+    path: ['quantityUsed'],
 });
+
 
 type UsageFormData = z.infer<typeof usageSchema>;
 
@@ -61,7 +66,6 @@ export function UsageForm({ stockItems }: UsageFormProps) {
     defaultValues: {
       employeeName: '',
       itemId: '',
-      quantityUsed: 1,
     },
   });
 
@@ -85,7 +89,8 @@ export function UsageForm({ stockItems }: UsageFormProps) {
     const formData = new FormData();
     formData.append('employeeName', data.employeeName);
     formData.append('itemId', data.itemId);
-    formData.append('quantityUsed', String(data.quantityUsed));
+    if(data.quantityUsed) formData.append('quantityUsed', String(data.quantityUsed));
+    if(data.quantityKgUsed) formData.append('quantityKgUsed', String(data.quantityKgUsed));
     formAction(formData);
   };
 
@@ -154,7 +159,7 @@ export function UsageForm({ stockItems }: UsageFormProps) {
                                   : 'opacity-0'
                               )}
                             />
-                            {item.name} (In stock: {item.quantity})
+                            {item.name} (In stock: {item.quantity}, {item.quantityKg ?? 0} KG)
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -167,19 +172,34 @@ export function UsageForm({ stockItems }: UsageFormProps) {
           )}
         />
         
-        <FormField
-          control={form.control}
-          name="quantityUsed"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Quantity Used</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+            control={form.control}
+            name="quantityUsed"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Quantity Used</FormLabel>
+                <FormControl>
+                    <Input type="number" placeholder="e.g., 10" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+             <FormField
+            control={form.control}
+            name="quantityKgUsed"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Quantity (KG) Used</FormLabel>
+                <FormControl>
+                    <Input type="number" step="any" placeholder="e.g., 2.5" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        </div>
         
         <div className="flex items-center gap-4">
             <p className="text-sm text-muted-foreground">Date: {new Date().toLocaleDateString()}</p>

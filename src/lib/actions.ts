@@ -159,14 +159,20 @@ export async function removeStockItem(id: string) {
 const usageSchema = z.object({
   employeeName: z.string().min(3, 'Employee name is required'),
   itemId: z.string().min(1, 'You must select an item'),
-  quantityUsed: z.coerce.number().min(1, 'Quantity must be at least 1'),
+  quantityUsed: z.coerce.number().min(0, 'Quantity must be non-negative').optional(),
+  quantityKgUsed: z.coerce.number().min(0, 'Quantity (KG) must be non-negative').optional(),
+}).refine(data => (data.quantityUsed && data.quantityUsed > 0) || (data.quantityKgUsed && data.quantityKgUsed > 0), {
+    message: 'At least one quantity field must be greater than 0',
+    path: ['quantityUsed'],
 });
+
 
 export async function logUsageAction(prevState: any, formData: FormData) {
   const validatedFields = usageSchema.safeParse({
     employeeName: formData.get('employeeName'),
     itemId: formData.get('itemId'),
     quantityUsed: formData.get('quantityUsed'),
+    quantityKgUsed: formData.get('quantityKgUsed'),
   });
 
   if (!validatedFields.success) {

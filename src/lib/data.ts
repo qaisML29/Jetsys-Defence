@@ -14,16 +14,16 @@ interface Db {
 
 const defaultData: Db = {
     stockItems: [
-        { id: '1', name: 'Screws', category: 'Fasteners', quantity: 4800, minStockLimit: 1000, location: 'Aisle 1, Bin A', lastUpdated: '2025-08-23T12:53:46.821Z' },
+        { id: '1', name: 'Screws', category: 'Fasteners', quantity: 4800, quantityKg: 25, minStockLimit: 1000, location: 'Aisle 1, Bin A', lastUpdated: '2025-08-23T12:53:46.821Z' },
         { id: '2', name: 'Nuts', category: 'Fasteners', quantity: 8000, minStockLimit: 2000, location: 'Aisle 1, Bin B', lastUpdated: '2025-08-23T12:53:46.821Z' },
         { id: '3', name: 'Bolts', category: 'Fasteners', quantity: 300, minStockLimit: 500, location: 'Aisle 1, Bin C', lastUpdated: '2025-08-23T12:53:46.821Z' },
         { id: '4', name: 'Rivets', category: 'Fasteners', quantity: 10000, minStockLimit: 2500, location: 'Aisle 2, Bin A', lastUpdated: '2025-08-23T12:53:46.821Z' },
-        { id: '5', name: 'Aluminum Plate', category: 'Materials', quantity: 150, minStockLimit: 50, location: 'Yard 1', lastUpdated: '2025-08-23T12:53:46.821Z' },
+        { id: '5', name: 'Aluminum Plate', category: 'Materials', quantity: 150, quantityKg: 500, minStockLimit: 50, location: 'Yard 1', lastUpdated: '2025-08-23T12:53:46.821Z' },
     ],
     usageLogs: [
         { id: 'log1', employeeName: 'John Doe', itemId: '1', itemName: 'Screws', quantityUsed: 200, usageDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
         { id: 'log2', employeeName: 'Jane Smith', itemId: '2', itemName: 'Nuts', quantityUsed: 500, usageDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() },
-        { id: 'log3', employeeName: 'John Doe', itemId: '5', itemName: 'Aluminum Plate', quantityUsed: 5, usageDate: new Date().toISOString() },
+        { id: 'log3', employeeName: 'John Doe', itemId: '5', itemName: 'Aluminum Plate', quantityUsed: 5, quantityKgUsed: 12.5, usageDate: new Date().toISOString() },
     ],
     settings: {
         phoneNumbers: ['9872241604'],
@@ -34,19 +34,27 @@ function readDb(): Db {
   try {
     if (fs.existsSync(dataFilePath)) {
       const fileContent = fs.readFileSync(dataFilePath, 'utf-8');
-      return JSON.parse(fileContent);
+      const data = JSON.parse(fileContent);
+      // Ensure settings exists
+      if (!data.settings) {
+        data.settings = defaultData.settings;
+      }
+      return data;
     }
   } catch (error) {
     console.error("Error reading from db.json, falling back to default data.", error);
   }
   
-  // If db.json doesn't exist, create it with default data
   writeDb(defaultData);
   return JSON.parse(JSON.stringify(defaultData)); 
 }
 
 function writeDb(data: Db) {
   try {
+    const dir = path.dirname(dataFilePath);
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
     fs.writeFileSync(dataFilePath, JSON.stringify(data, null, 2), 'utf-8');
   } catch (error)
   {
@@ -123,13 +131,29 @@ export const addUsageLog = async (log: Omit<UsageLog, 'id' | 'itemName'> & { ite
   
   const stockItem = db.stockItems[itemIndex];
 
-  if (stockItem.quantity < log.quantityUsed) {
-    throw new Error("Insufficient stock");
+  if (log.quantityUsed && stockItem.quantity < log.quantityUsed) {
+    throw new Error("Insufficient stock quantity");
   }
+  
+  if (log.quantityKgUsed) {
+      if(stockItem.quantityKg === undefined || stockItem.quantityKg === null) {
+          throw new Error("Item does not have a KG quantity to deduct from.");
+      }
+      if(stockItem.quantityKg < log.quantityKgUsed) {
+        throw new Error("Insufficient stock KG quantity");
+      }
+  }
+
 
   const wasLow = stockItem.quantity < stockItem.minStockLimit;
 
-  stockItem.quantity -= log.quantityUsed;
+  if(log.quantityUsed) {
+    stockItem.quantity -= log.quantityUsed;
+  }
+  if(log.quantityKgUsed && stockItem.quantityKg) {
+      stockItem.quantityKg -= log.quantityKgUsed;
+  }
+
   stockItem.lastUpdated = new Date().toISOString();
   
   const newLog: UsageLog = {
