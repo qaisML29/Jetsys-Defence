@@ -14,6 +14,9 @@ import {
 import type { AppSettings, StockItem } from '@/types';
 import twilio from 'twilio';
 import { redirect } from 'next/navigation';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const stockSchema = z.object({
   name: z.string().min(1, 'Name is required'),
