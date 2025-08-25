@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, ChevronsUpDown, Check } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Command,
@@ -20,6 +19,7 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
+import { redirect } from 'next/navigation';
 
 interface AddStockFormProps {
   categories: string[];
@@ -35,7 +35,6 @@ const initialState = {
 export function AddStockForm({ categories }: AddStockFormProps) {
   const [state, formAction] = useActionState(createStockItem, initialState);
   const { toast } = useToast();
-  const router = useRouter();
 
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState("")
@@ -47,10 +46,8 @@ export function AddStockForm({ categories }: AddStockFormProps) {
         description: state.message,
         variant: 'destructive',
       });
-    } else if (state.type === 'success') {
-      router.push('/manage-stock');
     }
-  }, [state, toast, router]);
+  }, [state, toast]);
 
   return (
     <form action={formAction} className="space-y-6">
