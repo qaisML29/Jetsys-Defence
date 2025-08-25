@@ -154,18 +154,12 @@ export async function editStockItem(
   }
 
   try {
-    const originalItem = await getStockItem(id);
-    if (!originalItem) {
-        return { type: 'error', message: 'Item not found.' };
-    }
-    const wasLow = originalItem.quantity < originalItem.minStockLimit;
-
     const updatedItem = await updateStockItem(id, validatedFields.data);
 
     if (updatedItem) {
       const isLow = updatedItem.quantity < updatedItem.minStockLimit;
-      // Trigger alert if it just became low
-      if (isLow && !wasLow) {
+      // Trigger alert if it is low
+      if (isLow) {
         await sendLowStockAlert(updatedItem);
       }
     }

@@ -34,7 +34,7 @@
       "quantity": 1000,
       "minStockLimit": 2500,
       "location": "Aisle 2, Bin A",
-      "lastUpdated": "2025-08-25T06:04:21.827Z"
+      "lastUpdated": "2025-08-25T06:07:28.790Z"
     },
     {
       "id": "5",
@@ -125,7 +125,7 @@
   ],
   "settings": {
     "phoneNumbers": [
-      "9872241604"
+      "9372241654"
     ]
   }
 }
