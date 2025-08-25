@@ -30,27 +30,61 @@ const stockSchema = z.object({
 // Helper function to send notifications
 async function sendLowStockAlert(item: StockItem) {
   const settings = await getSettings();
-  if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_WHATSAPP_NUMBER) {
-    console.log("Twilio credentials are not set in environment variables. Skipping WhatsApp alert.");
+  const twilioSid = process.env.TWILIO_ACCOUNT_SID;
+  const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+  const twilioWhatsappNumber = process.env.TWILIO_WHATSAPP_NUMBER;
+  const twilioSmsNumber = process.env.TWILIO_SMS_NUMBER;
+  
+  if (!twilioSid || !twilioAuthToken) {
+    console.log("Twilio credentials (SID, Auth Token) are not set. Skipping alerts.");
     return;
   }
+  
+  const canSendWhatsapp = !!twilioWhatsappNumber;
+  const canSendSms = !!twilioSmsNumber;
 
+  if (!canSendWhatsapp && !canSendSms) {
+    console.log("Neither WhatsApp nor SMS sending numbers are configured. Skipping alerts.");
+    return;
+  }
+  
   if (settings.phoneNumbers && settings.phoneNumbers.length > 0) {
     const message = `JETSYS™ Alert: Stock for "${item.name}" is low. Current quantity: ${item.quantity}. Minimum limit: ${item.minStockLimit}.`;
-    
-    const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+    const client = twilio(twilioSid, twilioAuthToken);
 
     console.log(`--- Low Stock Alert Triggered for ${item.name} ---`);
     for (const phoneNumber of settings.phoneNumbers) {
-      try {
-        await client.messages.create({
-          body: message,
-          from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`, // Your Twilio WhatsApp number
-          to: `whatsapp:${phoneNumber.startsWith('+') ? phoneNumber : '+' + phoneNumber}`
-        });
-        console.log(`Successfully sent WhatsApp message to ${phoneNumber}`);
-      } catch (error) {
-        console.error(`Failed to send WhatsApp message to ${phoneNumber}:`, error);
+      const e164PhoneNumber = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+      let sent = false;
+
+      // 1. Try sending via WhatsApp
+      if (canSendWhatsapp) {
+        try {
+          await client.messages.create({
+            body: message,
+            from: `whatsapp:${twilioWhatsappNumber}`,
+            to: `whatsapp:${e164PhoneNumber}`
+          });
+          console.log(`Successfully sent WhatsApp message to ${e164PhoneNumber}`);
+          sent = true;
+        } catch (error) {
+          console.error(`Failed to send WhatsApp message to ${e164PhoneNumber}. Error:`, error);
+        }
+      }
+
+      // 2. If WhatsApp failed, try sending via SMS
+      if (!sent && canSendSms) {
+        console.log(`WhatsApp failed for ${e164PhoneNumber}, attempting SMS fallback.`);
+        try {
+          await client.messages.create({
+            body: message,
+            from: twilioSmsNumber,
+            to: e164PhoneNumber
+          });
+          console.log(`Successfully sent SMS message to ${e164PhoneNumber}`);
+        } catch (error) {
+           console.error(`Failed to send fallback SMS to ${e164PhoneNumber}. Error:`, error);
+        }
       }
     }
     console.log(`--- End of Alert ---`);
@@ -121,7 +155,10 @@ export async function editStockItem(
 
   try {
     const originalItem = await getStockItem(id);
-    const wasLow = originalItem ? originalItem.quantity < originalItem.minStockLimit : false;
+    if (!originalItem) {
+        return { type: 'error', message: 'Item not found.' };
+    }
+    const wasLow = originalItem.quantity < originalItem.minStockLimit;
 
     const updatedItem = await updateStockItem(id, validatedFields.data);
 

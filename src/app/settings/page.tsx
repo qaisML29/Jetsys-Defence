@@ -16,8 +16,10 @@ export default async function SettingsPage() {
                 <CardHeader>
                     <CardTitle>Low Stock Alerts</CardTitle>
                     <CardDescription>
-                        Manage phone numbers for receiving low stock alerts via SMS/WhatsApp.
-                        The alert system itself requires separate backend configuration (e.g., Twilio).
+                        Manage phone numbers for receiving low stock alerts. The system will first
+                        try to send a WhatsApp message. If that fails, it will fall back to sending
+                        a standard SMS text message. This requires separate backend configuration
+                        (e.g., Twilio `TWILIO_WHATSAPP_NUMBER` and `TWILIO_SMS_NUMBER`).
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
