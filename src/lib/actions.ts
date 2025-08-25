@@ -184,18 +184,14 @@ export async function logUsageAction(prevState: any, formData: FormData) {
   }
 
   try {
-    const { updatedItem, wasLow } = await addUsageLog({
+    const { updatedItem } = await addUsageLog({
       ...validatedFields.data,
       itemName: '', // Will be set in addUsageLog
       usageDate: new Date().toISOString(),
     });
 
-    // Check if the item just became low on stock
-    if (
-      updatedItem &&
-      updatedItem.quantity < updatedItem.minStockLimit &&
-      !wasLow
-    ) {
+    // Check if the item is low on stock after the update
+    if (updatedItem && updatedItem.quantity < updatedItem.minStockLimit) {
       await sendLowStockAlert(updatedItem);
     }
 
