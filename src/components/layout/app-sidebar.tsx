@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -17,9 +18,12 @@ import {
   FileText,
   BarChart2,
   Shield,
+  LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Separator } from '../ui/separator';
+import { Button } from '../ui/button';
+import { useAuth } from '@/context/auth-context';
 
 const menuItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -31,6 +35,7 @@ const menuItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { logout } = useAuth();
 
   return (
     <>
@@ -63,7 +68,13 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <Separator className="my-2 bg-sidebar-border" />
-        <div className="text-xs text-center text-sidebar-foreground/60 p-4">
+        <div className='p-2'>
+            <Button variant="ghost" className="w-full justify-start gap-2" onClick={logout}>
+                <LogOut />
+                <span>Logout</span>
+            </Button>
+        </div>
+        <div className="text-xs text-center text-sidebar-foreground/60 p-4 pt-0">
           © {new Date().getFullYear()} JETSYS™ Defence
         </div>
       </SidebarFooter>

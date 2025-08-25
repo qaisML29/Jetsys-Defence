@@ -1,3 +1,5 @@
+
+import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { getStockItems } from '@/lib/data';
 import { PageHeader } from '@/components/page-header';
@@ -13,6 +15,11 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+
+export const metadata: Metadata = {
+  title: 'Dashboard | JETSYS™ Defence Inventory',
+  description: 'Overview of your inventory',
+};
 
 export default function DashboardPage() {
   return (

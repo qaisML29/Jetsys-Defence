@@ -1,10 +1,14 @@
-import type { Metadata } from 'next';
+
+'use client';
+
 import { PT_Sans, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { SidebarProvider, Sidebar, SidebarInset } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { Toaster } from "@/components/ui/toaster"
 import { cn } from '@/lib/utils';
+import { AuthProvider, useAuth } from '@/context/auth-context';
+import LoginPage from './login/page';
 
 const ptSans = PT_Sans({
   subsets: ['latin'],
@@ -18,10 +22,26 @@ const playfairDisplay = Playfair_Display({
   variable: '--font-playfair-display',
 });
 
-export const metadata: Metadata = {
-  title: 'JETSYS™ Defence Inventory',
-  description: 'Inventory Management System for JETSYS™ Defence',
-};
+function AppContent({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
+  return (
+    <SidebarProvider>
+      <Sidebar>
+        <AppSidebar />
+      </Sidebar>
+      <SidebarInset>
+        <div className="min-h-full">
+          {children}
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  )
+}
 
 export default function RootLayout({
   children,
@@ -31,17 +51,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className={cn("font-body antialiased h-full", ptSans.variable, playfairDisplay.variable)}>
-        <SidebarProvider>
-          <Sidebar>
-            <AppSidebar />
-          </Sidebar>
-          <SidebarInset>
-            <div className="min-h-full">
-              {children}
-            </div>
-          </SidebarInset>
-        </SidebarProvider>
-        <Toaster />
+        <AuthProvider>
+          <AppContent>
+            {children}
+          </AppContent>
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );
